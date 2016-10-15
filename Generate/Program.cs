@@ -10,6 +10,7 @@ namespace Generate
     {
         static void Main(string[] args)
         {
+
         }
     }
 }

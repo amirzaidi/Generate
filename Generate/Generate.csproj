@@ -65,6 +65,9 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Content\Chunk.cs" />
+    <Compile Include="D3D\Depth.cs" />
+    <Compile Include="D3D\Renderer.cs" />
     <Compile Include="Extentions.cs" />
     <Compile Include="Input\KeyboardMouse.cs" />
     <Compile Include="Procedure\Master.cs" />

@@ -1,9 +1,12 @@
-﻿using System;
+﻿using Generate.D3D;
+using System;
 
 namespace Generate
 {
     class Program
     {
+        internal static Renderer Renderer;
+
         static void Main(string[] args)
         {
             Log("Seed? ");
@@ -16,9 +19,9 @@ namespace Generate
             LogLine(new Procedure.Worker("¥¬".AsciiBytes()).Next());
 
             using (var Window = new Window())
+            using (Renderer = new Renderer(Window))
             {
                 Window.Show();
-                System.Threading.Thread.Sleep(1000);
             }
 
             Console.ReadKey();

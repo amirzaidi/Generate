@@ -1,8 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace Generate
 {
@@ -11,17 +7,21 @@ namespace Generate
         static void Main(string[] args)
         {
             Log("Seed? ");
-            Procedure.Worker.Master = new Procedure.Master(Encoding.ASCII.GetBytes(Console.ReadLine()));
-            LogLine(Procedure.Worker.Master.GetSeed(Encoding.ASCII.GetBytes("Main")));
-            LogLine(Procedure.Worker.Master.GetSeed(Encoding.ASCII.GetBytes("Slave")));
-            LogLine(Procedure.Worker.Master.GetSeed(Encoding.ASCII.GetBytes("Depth")));
-            LogLine(Procedure.Worker.Master.GetSeed(Encoding.ASCII.GetBytes("Colors")));
-            LogLine(Procedure.Worker.Master.GetSeed(Encoding.ASCII.GetBytes("Test A Longer String LOL")));
-            LogLine(Procedure.Worker.Master.GetSeed(Encoding.ASCII.GetBytes("¥¬")));
+            Procedure.Worker.Master = new Procedure.Master(Console.ReadLine().AsciiBytes());
+            LogLine(new Procedure.Worker("Main".AsciiBytes()).Next());
+            LogLine(new Procedure.Worker("Slave".AsciiBytes()).Next());
+            LogLine(new Procedure.Worker("Depth".AsciiBytes()).Next());
+            LogLine(new Procedure.Worker("Colors".AsciiBytes()).Next());
+            LogLine(new Procedure.Worker("Test A Longer String LOL".AsciiBytes()).Next());
+            LogLine(new Procedure.Worker("¥¬".AsciiBytes()).Next());
 
-            Log(new Random(Procedure.Worker.Master.GetSeed(Encoding.ASCII.GetBytes("negative"))).Next());
+            using (var Window = new Window())
+            {
+                Window.Show();
+                System.Threading.Thread.Sleep(1000);
+            }
 
-            Console.ReadLine();
+            Console.ReadKey();
         }
 
         static void LogLine(object In, string From = null)

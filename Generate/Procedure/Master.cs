@@ -1,8 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace Generate.Procedure
 {
@@ -38,7 +34,7 @@ namespace Generate.Procedure
                 Result[i % 4] ^= Seed[Place];
             }
             
-            return BitConverter.ToInt32(Result, 0);
+            return (2 * (Stride % 2) - 1) * BitConverter.ToInt32(Result, 0);
         }
     }
 }

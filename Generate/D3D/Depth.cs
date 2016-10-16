@@ -9,10 +9,10 @@ namespace Generate.D3D
     class Depth : IDisposable
     {
         private DepthStencilState DepthStencilState;
-        public DepthStencilView DepthStencilView;
+        internal DepthStencilView DepthStencilView;
         private RasterizerState RasterizerState;
 
-        public Depth(Device Device, ModeDescription Resolution)
+        internal Depth(Device Device, ModeDescription Resolution)
         {
             DepthStencilState = new DepthStencilState(Device, StencilDesc);
             Device.ImmediateContext.OutputMerger.SetDepthStencilState(DepthStencilState, 1);
@@ -30,12 +30,7 @@ namespace Generate.D3D
         public void Dispose()
         {
             Utilities.Dispose(ref RasterizerState);
-
-            if (DepthStencilView?.Resource != null)
-            {
-                DepthStencilView.Resource.Dispose();
-            }
-
+            DepthStencilView?.Resource?.Dispose();
             Utilities.Dispose(ref DepthStencilView);
             Utilities.Dispose(ref DepthStencilState);
         }
@@ -77,7 +72,7 @@ namespace Generate.D3D
                 MipLevels = 1,
                 ArraySize = 1,
                 Format = Format.D24_UNorm_S8_UInt,
-                SampleDescription = Renderer.AA,
+                SampleDescription = Renderer.AntiAliasing,
                 Usage = ResourceUsage.Default,
                 BindFlags = BindFlags.DepthStencil,
                 CpuAccessFlags = CpuAccessFlags.None,
@@ -111,7 +106,7 @@ namespace Generate.D3D
             SlopeScaledDepthBias = 0.0f
         };
 
-        public static float ScreenFar = 10000.0f;
-        public static float ScreenNear = 0.01f;
+        internal const float ScreenFar = 10000.0f;
+        internal const float ScreenNear = 0.01f;
     }
 }

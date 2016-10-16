@@ -30,7 +30,7 @@ namespace Generate.Content
             }
         }
 
-        internal void UpX()
+        internal static void UpX()
         {
             MovedX++;
             for (int Z = 0; Z < 5; Z++)
@@ -44,7 +44,7 @@ namespace Generate.Content
             }
         }
 
-        internal void DownX()
+        internal static void DownX()
         {
             MovedX--;
             for (int Z = 0; Z < 5; Z++)
@@ -58,7 +58,7 @@ namespace Generate.Content
             }
         }
 
-        internal void UpZ()
+        internal static void UpZ()
         {
             MovedZ++;
             for (int X = 0; X < 5; X++)
@@ -73,7 +73,7 @@ namespace Generate.Content
             }
         }
 
-        internal void DownZ()
+        internal static void DownZ()
         {
             MovedZ--;
             for (int X = 0; X < 5; X++)

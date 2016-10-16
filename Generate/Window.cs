@@ -1,11 +1,13 @@
 ﻿using SharpDX.Windows;
 using System;
+using System.Collections;
 using System.Drawing;
+using System.Threading.Tasks;
 using System.Windows.Forms;
 
 namespace Generate
 {
-    class Window : IDisposable
+    class LoopWindow : IDisposable
     {
         private Form Form;
         internal IntPtr Handle
@@ -16,16 +18,21 @@ namespace Generate
             }
         }
 
-        internal Window()
+        internal LoopWindow()
         {
             Form = new RenderForm();
             Form.MouseEnter += (s, e) => Cursor.Hide();
             Form.MouseLeave += (s, e) => Cursor.Show();
+            Form.MouseDown += Input.KeyboardMouse.MouseDown;
+            Form.MouseUp += Input.KeyboardMouse.MouseUp;
         }
 
-        internal void Show()
+        internal RenderLoop Loop()
         {
+            var RenderLoop = new RenderLoop(Form);
             Form.Show();
+            Form.Activate();
+            return RenderLoop;
         }
 
         internal void Borderless(int Width, int Height)
@@ -37,6 +44,7 @@ namespace Generate
 
         public void Dispose()
         {
+            Form.Close();
             Form.Dispose();
         }
     }

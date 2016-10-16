@@ -26,7 +26,7 @@ namespace Generate.Input
         private static Dictionary<Keys, KeyPressDuration> Keys = new Dictionary<Keys, KeyPressDuration>();
         private static MouseMovement Mouse;
 
-        static KeyboardMouse()
+        public static void StartCapture()
         {
             foreach (Keys Key in Enum.GetValues(typeof(Keys)))
             {
@@ -67,7 +67,7 @@ namespace Generate.Input
             }*/
         }
 
-        public void MouseDown(object s, MouseEventArgs e)
+        public static void MouseDown(object s, MouseEventArgs e)
         {
             var Key = Translate(e.Button);
             if (Key != System.Windows.Forms.Keys.None)
@@ -76,7 +76,7 @@ namespace Generate.Input
             }
         }
 
-        public void MouseUp(object s, MouseEventArgs e)
+        public static void MouseUp(object s, MouseEventArgs e)
         {
             var Key = Translate(e.Button);
             if (Key != System.Windows.Forms.Keys.None)
@@ -85,7 +85,7 @@ namespace Generate.Input
             }
         }
 
-        private Keys Translate(MouseButtons Button)
+        private static Keys Translate(MouseButtons Button)
         {
             var Key = System.Windows.Forms.Keys.None;
             if (Button == MouseButtons.Left)

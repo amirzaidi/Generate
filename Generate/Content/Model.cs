@@ -21,12 +21,6 @@ namespace Generate.Content
         private Texture2D Texture;
         private ShaderResourceView TextureView;
 
-        struct ShuffleXY
-        {
-            public int X;
-            public int Y;
-        }
-
         internal Model(Vector3 MoveWorld, Vertex[] Vertices, int[] Indices, int Seed)
         {
             this.MoveWorld = MoveWorld;
@@ -39,43 +33,18 @@ namespace Generate.Content
             IndexBuffer = Buffer.Create(Program.Renderer.Device, BindFlags.IndexBuffer, this.Indices);
 
             var Rand = new Random(Seed);
-            int Size = (int)Math.Pow(2, Rand.Next(3, 7));
-
-            var Shuffles = new System.Collections.Generic.List<ShuffleXY>();
-            for (int i = 0; i < Size * 2; i++)
-            {
-                Shuffles.Add(new ShuffleXY
-                {
-                    X = Rand.Next(Size),
-                    Y = Rand.Next(Size)
-                });
-            }
-
-            var Red = (byte)Rand.Next(0, byte.MaxValue + 1);
-            var SelectMax = Rand.Next(0, 2);
-            var Max = (byte)Rand.Next(64, 192);
+            int Size = (int)Math.Pow(2, Rand.Next(Procedure.Constants.AvgTexDensity - 1, Procedure.Constants.AvgTexDensity + 1));
 
             // Allocate DataStream to receive the WIC image pixels
             using (var buffer = new DataStream(Size * Size * 4, true, true))
             {
-                var Bytes = new byte[2];
                 for (int X = 0; X < Size; X++)
                 {
                     for (int Y = 0; Y < Size; Y++)
                     {
-                        buffer.WriteByte(Red);
-
-                        if (Shuffles.Contains(new ShuffleXY { X = X, Y = Y }))
-                        {
-                            Rand.NextBytes(Bytes);
-                            Bytes[SelectMax] = (byte)(Bytes[SelectMax] % Max);
-                        }
-
-                        buffer.Write(Bytes, 0, 2);
-
-                        //buffer.WriteByte(200);
-                        //buffer.WriteByte((byte)(64 * (X + MoveWorld.X) % 256));
-                        //buffer.WriteByte((byte)(32 * (Y + MoveWorld.Z) % 256));
+                        buffer.WriteByte((byte)Rand.Next(0, 256));
+                        buffer.WriteByte((byte)Rand.Next(0, 256));
+                        buffer.WriteByte((byte)Rand.Next(0, 256));
 
                         buffer.WriteByte(byte.MaxValue);
                     }

@@ -40,7 +40,16 @@ namespace Generate.Input
             lock (Timer)
             {
                 Camera.RotationX += e.X;
-                Camera.RotationY += e.Y;
+                Camera.RotationY += (short)e.Y;
+
+                if (Camera.RotationY > 1500)
+                {
+                    Camera.RotationY = 1500;
+                }
+                else if (Camera.RotationY < -1500)
+                {
+                    Camera.RotationY = -1500;
+                }
             }
         }
 

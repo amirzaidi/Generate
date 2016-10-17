@@ -107,16 +107,13 @@ namespace Generate.Content
 
         internal Chunk(int X, int Z)
         {
+            Random = new Worker($"{X}.{Z}.chunk");
+
             Task.Run(async delegate
             {
-                Random = new Worker($"{X}.{Z}.chunk");
-
-                await Task.Delay(50);
                 Models.Add(DefaultModels.Ground(Random.Next()));
-
                 await Task.Delay(50);
                 Models.Add(DefaultModels.Sphere(Random.Next()));
-
                 await Task.Delay(50);
                 Models.Add(DefaultModels.Triangle(Random.Next()));
 

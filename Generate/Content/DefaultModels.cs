@@ -5,11 +5,10 @@ namespace Generate.Content
 {
     class DefaultModels
     {
+        // Credits to SharpDX Toolkit
         internal static Model Sphere(int Seed)
         {
-            // Credits to SharpDX Toolkit
-
-            int tessellation = 64;
+            int tessellation = 16;
             float diameter = 4.0f;
 
             int verticalSegments = tessellation;

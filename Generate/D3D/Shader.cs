@@ -40,6 +40,8 @@ namespace Generate.D3D
         private DataStream BufferStream;
         private ConstantMatrixLayout ConstantMatrix;
 
+        private LightLayout Light;
+
         internal Shader(Device Device, Matrix Perspective)
         {
             ConstantMatrix.Projection = Perspective;
@@ -95,29 +97,30 @@ namespace Generate.D3D
                 MinimumLod = -float.MaxValue,
                 MaximumLod = float.MaxValue
             }));
-        }
 
-        private LightLayout Light = new LightLayout
-        {
-            Color = new Vector4(1, 0.5f, 1, 1),
-            Direction = new Vector3(1, 2, 1),
-            Padding = 0
-        };
+            var LightColor = new[] { Procedure.Constants.Hue, Procedure.Constants.Saturation * 0.75f, Procedure.Constants.Brightness * 0.75f + 0.25f }.ToRGB();
+            Light = new LightLayout
+            {
+                Color = new Vector4(LightColor.R, LightColor.G, LightColor.B, 1),
+                Direction = new Vector3(1, 2, 1),
+                Padding = 0
+            };
+
+            Context.MapSubresource(LightBuffer, MapMode.WriteDiscard, MapFlags.None, out BufferStream);
+            BufferStream.Write(Light);
+            Context.UnmapSubresource(LightBuffer, 0);
+        }
 
         internal void UpdateBuffers(Vector3 MoveWorld, float Rotate, float Scale)
         {
             ConstantMatrix.World = Matrix.Scaling(Scale) * Matrix.RotationY(Rotate) * Matrix.Translation(MoveWorld);
             ConstantMatrix.World.Transpose();
-            ConstantMatrix.View = Input.Camera.View();
+            ConstantMatrix.View = Input.Camera.View;
             ConstantMatrix.WVP = ConstantMatrix.Projection * ConstantMatrix.View * ConstantMatrix.World;
 
             Context.MapSubresource(ConstantMatrixBuffer, MapMode.WriteDiscard, MapFlags.None, out BufferStream);
             BufferStream.Write(ConstantMatrix);
             Context.UnmapSubresource(ConstantMatrixBuffer, 0);
-
-            Context.MapSubresource(LightBuffer, MapMode.WriteDiscard, MapFlags.None, out BufferStream);
-            BufferStream.Write(Light);
-            Context.UnmapSubresource(LightBuffer, 0);
         }
 
         public void Dispose()

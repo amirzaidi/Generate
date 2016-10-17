@@ -1,6 +1,7 @@
 ﻿using Generate.D2D;
 using Generate.D3D;
 using Generate.Input;
+using Generate.Procedure;
 using System;
 using System.Threading.Tasks;
 
@@ -14,29 +15,21 @@ namespace Generate
 
         internal static bool Close = false;
         internal static int VSync = 1;
-        internal static SharpDX.Color4 MainColor;
         private static uint Frames = 0;
 
         static void Main(string[] args)
         {
             Log("Seed? ");
-            Procedure.Worker.Master = new Procedure.Master(Console.ReadLine().AsciiBytes());
-            LogLine(new Procedure.Worker("Main".AsciiBytes()).Next());
-            LogLine(new Procedure.Worker("Slave".AsciiBytes()).Next());
-            LogLine(new Procedure.Worker("Depth".AsciiBytes()).Next());
-            LogLine(new Procedure.Worker("Colors".AsciiBytes()).Next());
-            LogLine(new Procedure.Worker("Test A Longer String LOL".AsciiBytes()).Next());
-            LogLine(new Procedure.Worker("¥¬".AsciiBytes()).Next());
-
-            var BGRandom = new Procedure.Worker("bg");
-            MainColor = new[] { (float)BGRandom.NextDouble(), 0.5f + (float)BGRandom.NextDouble() / 2f, 0.5f + (float)BGRandom.NextDouble() / 2f }.ToRGB();
-            KeyboardMouse.StartCapture();
-
+            Worker.Master = new Master(Console.ReadLine().AsciiBytes());
+            Constants.Load();
+            
             using (Window = new LoopWindow())
             using (Renderer = new Renderer(Window))
             using (Overlay = new Overlay(Renderer.Device, Renderer.AntiAliasedBackBuffer))
             using (var Loop = Window.Loop())
             {
+                KeyboardMouse.StartCapture();
+
                 while (!Close && Loop.NextFrame())
                 {
                     Frame();
@@ -48,7 +41,7 @@ namespace Generate
         static void Frame()
         {
             var UpdateTask = Processor.Process();
-            using (var RenderTarget = Renderer.PrepareFrame(MainColor))
+            using (var RenderTarget = Renderer.PrepareFrame(Constants.BG))
             {
                 Task.WhenAll(UpdateTask);
                 Content.Chunk.RenderVisible();

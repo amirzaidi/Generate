@@ -1,5 +1,7 @@
-﻿using System;
+﻿using Generate.Procedure;
+using System;
 using System.Collections.Concurrent;
+using System.Threading.Tasks;
 
 namespace Generate.Content
 {
@@ -7,6 +9,7 @@ namespace Generate.Content
     {
         private static Chunk[,] Chunks = new Chunk[5, 5];
         private static int MovedX = 0, MovedZ = 0;
+        private const float Size = 64f;
 
         static Chunk()
         {
@@ -19,7 +22,7 @@ namespace Generate.Content
             }
         }
 
-        internal static void Render()
+        internal static void RenderVisible()
         {
             for (int X = 0; X < 5; X++)
             {
@@ -33,35 +36,37 @@ namespace Generate.Content
         internal static void UpX()
         {
             MovedX++;
-            for (int Z = 0; Z < 5; Z++)
+            Parallel.For(0, 5, Z =>
             {
                 Chunks[0, Z].Dispose();
-                Chunks[0, Z] = Chunks[1, Z];
-                Chunks[1, Z] = Chunks[2, Z];
-                Chunks[2, Z] = Chunks[3, Z];
-                Chunks[3, Z] = Chunks[4, Z];
+                for (int X = 0; X < 4; X++)
+                {
+                    Chunks[X, Z] = Chunks[X + 1, Z];
+                }
+
                 Chunks[4, Z] = new Chunk(4 + MovedX, Z + MovedZ);
-            }
+            });
         }
 
         internal static void DownX()
         {
             MovedX--;
-            for (int Z = 0; Z < 5; Z++)
+            Parallel.For(0, 5, Z =>
             {
                 Chunks[4, Z].Dispose();
-                Chunks[4, Z] = Chunks[3, Z];
-                Chunks[3, Z] = Chunks[2, Z];
-                Chunks[2, Z] = Chunks[1, Z];
-                Chunks[1, Z] = Chunks[0, Z];
+                for (int X = 4; X > 0; X--)
+                {
+                    Chunks[X, Z] = Chunks[X - 1, Z];
+                }
+
                 Chunks[0, Z] = new Chunk(MovedX, Z + MovedZ);
-            }
+            });
         }
 
         internal static void UpZ()
         {
             MovedZ++;
-            for (int X = 0; X < 5; X++)
+            Parallel.For(0, 5, X =>
             {
                 Chunks[X, 0].Dispose();
                 for (int Z = 0; Z < 4; Z++)
@@ -70,13 +75,13 @@ namespace Generate.Content
                 }
 
                 Chunks[X, 4] = new Chunk(X + MovedX, 4 + MovedZ);
-            }
+            });
         }
 
         internal static void DownZ()
         {
             MovedZ--;
-            for (int X = 0; X < 5; X++)
+            Parallel.For(0, 5, X =>
             {
                 Chunks[X, 4].Dispose();
                 for (int Z = 4; Z > 0; Z--)
@@ -85,10 +90,10 @@ namespace Generate.Content
                 }
 
                 Chunks[X, 0] = new Chunk(X + MovedX, MovedZ);
-            }
+            });
         }
 
-        public static void DisposeAll()
+        internal static void DisposeAll()
         {
             foreach (var Chunk in Chunks)
             {
@@ -96,27 +101,50 @@ namespace Generate.Content
             }
         }
 
-        private ConcurrentBag<IDisposable> Models = new ConcurrentBag<IDisposable>();
+        private ConcurrentBag<Model> Models = new ConcurrentBag<Model>();
+        private bool Loaded = false;
+        private Worker Random;
 
         internal Chunk(int X, int Z)
         {
-            Console.WriteLine($"Created {X}, {Z}");
+            Task.Run(async delegate
+            {
+                Random = new Worker($"{X}.{Z}.chunk");
+
+                await Task.Delay(50);
+                Models.Add(DefaultModels.Ground(Random.Next()));
+
+                await Task.Delay(50);
+                Models.Add(DefaultModels.Sphere(Random.Next()));
+
+                await Task.Delay(50);
+                Models.Add(DefaultModels.Triangle(Random.Next()));
+
+                Loaded = true;
+                Console.WriteLine($"Created {X}, {Z}");
+            });
         }
 
-        public void Render(int DeltaX, int DeltaY)
+        public void Render(int dX, int dY)
         {
-            foreach (var Model in Models)
+            if (Loaded)
             {
-                
+                foreach (var Model in Models)
+                {
+                    Model.Render(new SharpDX.Vector2(dX * Size, dY * Size));
+                }
             }
         }
 
         public void Dispose()
         {
-            foreach (var Model in Models)
+            Task.Run(delegate
             {
-                Model.Dispose();
-            }
+                Parallel.ForEach(Models, Model =>
+                {
+                    Model.Dispose();
+                });
+            });
         }
     }
 }

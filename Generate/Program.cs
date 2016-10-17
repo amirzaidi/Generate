@@ -14,7 +14,7 @@ namespace Generate
 
         internal static bool Close = false;
         internal static int VSync = 1;
-        internal static SharpDX.Color4 BG = new SharpDX.Color4(0.4f, 0.67f, 0.88f, 0.0f);
+        internal static SharpDX.Color4 MainColor;
         private static uint Frames = 0;
 
         static void Main(string[] args)
@@ -28,6 +28,8 @@ namespace Generate
             LogLine(new Procedure.Worker("Test A Longer String LOL".AsciiBytes()).Next());
             LogLine(new Procedure.Worker("¥¬".AsciiBytes()).Next());
 
+            var BGRandom = new Procedure.Worker("bg");
+            MainColor = new[] { (float)BGRandom.NextDouble(), 0.5f + (float)BGRandom.NextDouble() / 2f, 0.5f + (float)BGRandom.NextDouble() / 2f }.ToRGB();
             KeyboardMouse.StartCapture();
 
             using (Window = new LoopWindow())
@@ -46,20 +48,20 @@ namespace Generate
         static void Frame()
         {
             var UpdateTask = Processor.Process();
-            using (var RenderTarget = Renderer.PrepareFrame(BG))
+            using (var RenderTarget = Renderer.PrepareFrame(MainColor))
             {
                 Task.WhenAll(UpdateTask);
-                Content.Chunk.Render();
-
-                Overlay.Start();
-                Overlay.DrawCrosshair();
-                Overlay.Draw($"Coords ({Camera.Position.X}, {Camera.Position.Y}, {Camera.Position.Z})", 10, 10, 500, 20);
-                Overlay.Draw($"Rotation ({Camera.RotationX}, {Camera.RotationY})", 10, 30, 500, 20);
-                Overlay.Draw($"Frames ({Frames}, VSync {VSync})", 10, 50, 500, 20);
-                Overlay.End();
-
-                Renderer.FinishFrame(VSync);
+                Content.Chunk.RenderVisible();
             }
+
+            Overlay.Start();
+            Overlay.DrawCrosshair();
+            Overlay.Draw($"Coords ({Camera.Position.X}, {Camera.Position.Y}, {Camera.Position.Z})", 10, 10, 500, 20);
+            Overlay.Draw($"Rotation ({Camera.RotationX}, {Camera.RotationY})", 10, 30, 500, 20);
+            Overlay.Draw($"Frames ({Frames}, VSync {VSync})", 10, 50, 500, 20);
+            Overlay.End();
+
+            Renderer.FinishFrame(VSync);
         }
 
         static void LogLine(object In, string From = null)

@@ -1,24 +1,25 @@
 ﻿using SharpDX;
-using System;
 
 namespace Generate.Input
 {
     class Camera
     {
-        internal static float RotationX = 0; //0 to pi
-        internal static float RotationY = 0; //0 to 2pi
-        internal static Vector3 Position = new Vector3(0, 0, 0);
-
-        internal static void Reset()
+        internal static long RotationX = 0;
+        internal static long RotationY = 0;
+        internal static Matrix Rotation
         {
-            RotationX = 0;
-            RotationY = 0;
+            get
+            {
+                return Matrix.RotationYawPitchRoll(RotationX / 1000f, RotationY / 1000f, 0);
+            }
         }
+
+        internal static Vector3 Position = new Vector3(0, 0, 0);
 
         internal static Matrix View()
         {
             // Create the rotation matrix from the yaw, pitch, and roll values.
-            var rotationMatrix = Matrix.RotationYawPitchRoll(RotationX, RotationY, 0);
+            var rotationMatrix = Rotation;
             var up = Vector3.TransformCoordinate(Vector3.UnitY, rotationMatrix);
 
             // Transform the lookAt and up vector by the rotation matrix so the view is correctly rotated at the origin.
@@ -36,28 +37,12 @@ namespace Generate.Input
 
         internal static void MoveForward(float Amount)
         {
-            // Create the rotation matrix from the yaw, pitch, and roll values.
-            var rotationMatrix = Matrix.RotationYawPitchRoll(RotationX, RotationY, 0);
-
-            // Transform the lookAt and up vector by the rotation matrix so the view is correctly rotated at the origin.
-            var moveTo = Vector3.TransformCoordinate(new Vector3(0, 0, 1), rotationMatrix);
-
-            Position.X += moveTo.X * Amount;
-            Position.Y += moveTo.Y * Amount;
-            Position.Z += moveTo.Z * Amount;
+            Position += Vector3.TransformCoordinate(new Vector3(0, 0, 1), Rotation) * Amount;
         }
 
         internal static void MoveRight(float Amount)
         {
-            // Create the rotation matrix from the yaw, pitch, and roll values.
-            var rotationMatrix = Matrix.RotationYawPitchRoll(RotationX + (float)Math.PI / 2, 0, 0);
-
-            // Transform the lookAt and up vector by the rotation matrix so the view is correctly rotated at the origin.
-            var moveTo = Vector3.TransformCoordinate(new Vector3(0, 0, 1), rotationMatrix);
-
-            Position.X += moveTo.X * Amount;
-            Position.Y += moveTo.Y * Amount;
-            Position.Z += moveTo.Z * Amount;
+            Position += Vector3.TransformCoordinate(new Vector3(1, 0, 0), Rotation) * Amount;
         }
     }
 }

@@ -13,9 +13,14 @@ namespace Generate.D3D
         internal static SampleDescription AntiAliasing = new SampleDescription(8, 0);
         internal Device Device;
         private SwapChain1 SwapChain;
-        private DeviceDebug Debug;
         private Depth Depth;
-        private Shader Shader;
+        private ModeDescription Resolution = new ModeDescription
+        {
+            Width = 0,
+            Height = 0
+        };
+
+        internal Shader Shader;
         internal Texture2D AntiAliasedBackBuffer;
 
         internal Renderer(LoopWindow Window)
@@ -39,22 +44,26 @@ namespace Generate.D3D
             {
                 Device = new Device(Factory.Adapters1[0], DeviceCreationFlags.Debug | DeviceCreationFlags.BgraSupport);
                 SwapChain = new SwapChain1(Factory, Device, Window.Handle, ref SwapChainDescription);
+
+                foreach (var Output in Factory.Adapters.First().Outputs)
+                {
+                    foreach (var PossibleResolution in Output.GetDisplayModeList(Format.R8G8B8A8_UNorm, 0))
+                    {
+                        if (PossibleResolution.Scaling == DisplayModeScaling.Unspecified && PossibleResolution.Width >= Resolution.Width && PossibleResolution.Height >= Resolution.Height)
+                        {
+                            Resolution = PossibleResolution;
+                        }
+                    }
+                }
             }
 
-            Debug = Device.QueryInterface<DeviceDebug>();
-            Debug.ReportLiveDeviceObjects(ReportingLevel.Detail);
-
-            var Resolution = GetResolution();
-            Resolution.Format = Format.R8G8B8A8_UNorm;
-
             Window.Borderless(Resolution.Width, Resolution.Height);
-
-            SwapChain.ResizeTarget(ref Resolution);
-            SwapChain.ResizeBuffers(2, Resolution.Width, Resolution.Height, Resolution.Format, SwapChainFlags.None);
+            ResizeBuffers();
             
             Depth = new Depth(Device, Resolution);
 
             var Perspective = Matrix.PerspectiveFovLH((float)(Math.PI / 4), (float)(Resolution.Width) / Resolution.Height, Depth.ScreenNear, Depth.ScreenFar);
+            Perspective.Transpose();
             Shader = new Shader(Device, Perspective);
 
             AntiAliasedBackBuffer = new Texture2D(Device, new Texture2DDescription
@@ -69,40 +78,16 @@ namespace Generate.D3D
             });
         }
 
-        private ModeDescription GetResolution()
+        private void ResizeBuffers()
         {
-            var Resolution = new ModeDescription
-            {
-                Width = 0,
-                Height = 0
-            };
-
-            using (var Factory = SwapChain.GetParent<Factory>())
-            {
-                //Factory.MakeWindowAssociation(Window.Handle, WindowAssociationFlags.IgnoreAll);
-
-                foreach (var Output in Factory.Adapters.First().Outputs)
-                {
-                    foreach (Format Format in Enum.GetValues(typeof(Format)))
-                    {
-                        foreach (var PossibleResolution in Output.GetDisplayModeList(Format, 0))
-                        {
-                            if (PossibleResolution.Scaling == DisplayModeScaling.Unspecified && PossibleResolution.Width >= Resolution.Width && PossibleResolution.Height >= Resolution.Height)
-                            {
-                                Resolution = PossibleResolution;
-                            }
-                        }
-                    }
-                }
-            }
-
-            return Resolution;
+            SwapChain.ResizeTarget(ref Resolution);
+            SwapChain.ResizeBuffers(2, Resolution.Width, Resolution.Height, Resolution.Format, SwapChainFlags.AllowModeSwitch);
         }
 
         internal RenderTargetView PrepareFrame(RawColor4 Background)
         {
             var TargetView = new RenderTargetView(Device, AntiAliasedBackBuffer);
-            Device.ImmediateContext.OutputMerger.SetTargets(Depth.DepthStencilView, TargetView);
+            Device.ImmediateContext.OutputMerger.SetRenderTargets(Depth.DepthStencilView, TargetView);
             Device.ImmediateContext.ClearDepthStencilView(Depth.DepthStencilView, DepthStencilClearFlags.Depth, 1, 0);
             Device.ImmediateContext.ClearRenderTargetView(TargetView, Background);
             return TargetView;
@@ -113,6 +98,12 @@ namespace Generate.D3D
             using (var Surface = SwapChain.GetBackBuffer<Texture2D>(0))
             {
                 Device.ImmediateContext.ResolveSubresource(AntiAliasedBackBuffer, 0, Surface, 0, Format.R8G8B8A8_UNorm);
+            }
+
+            if ((VSync == 0) != SwapChain.IsFullScreen)
+            {
+                SwapChain.SetFullscreenState(VSync == 0, null);
+                ResizeBuffers();
             }
 
             SwapChain.Present(VSync, PresentFlags.None);
@@ -132,7 +123,6 @@ namespace Generate.D3D
 
             Utilities.Dispose(ref Device);
             Utilities.Dispose(ref SwapChain);
-            Utilities.Dispose(ref Debug);
         }
     }
 }

@@ -1,5 +1,4 @@
-﻿using System;
-using System.Threading.Tasks;
+﻿using System.Threading.Tasks;
 using System.Windows.Forms;
 
 namespace Generate.Input
@@ -10,7 +9,6 @@ namespace Generate.Input
         {
             return new[]
             {
-                Task.Factory.StartNew(RotationUpdate),
                 Task.Factory.StartNew(MovementUpdate),
                 Task.Factory.StartNew(ConstantsUpdate)
             };
@@ -20,56 +18,40 @@ namespace Generate.Input
         {
             float Duration;
             if (KeyboardMouse.HasDuration(Keys.W, out Duration))
-                Camera.MoveForward(Duration * 3);
+                Camera.MoveForward(Duration * 10);
 
             if (KeyboardMouse.HasDuration(Keys.A, out Duration))
-                Camera.MoveRight(-Duration * 3);
+                Camera.MoveRight(-Duration * 8);
 
             if (KeyboardMouse.HasDuration(Keys.S, out Duration))
-                Camera.MoveForward(-Duration * 3);
+                Camera.MoveForward(-Duration * 10);
 
             if (KeyboardMouse.HasDuration(Keys.D, out Duration))
-                Camera.MoveRight(Duration * 3);
+                Camera.MoveRight(Duration * 8);
 
             if (KeyboardMouse.HasDuration(Keys.ShiftKey, out Duration))
                 Camera.MoveForward(Duration * 30);
 
-            if (Camera.Position.X > 32)
+            if (Camera.Position.X > 32f)
             {
-                Camera.Position.X -= 64;
+                Camera.Position.X -= 64f;
                 Content.Chunk.UpX();
             }
-            else if (Camera.Position.X < -32)
+            else if (Camera.Position.X < -32f)
             {
-                Camera.Position.X += 64;
+                Camera.Position.X += 64f;
                 Content.Chunk.DownX();
             }
-
-            if (Camera.Position.Z > 32)
+            
+            if (Camera.Position.Z > 32f)
             {
-                Camera.Position.Z -= 64;
+                Camera.Position.Z -= 64f;
                 Content.Chunk.UpZ();
             }
-            else if (Camera.Position.Z < -32)
+            else if (Camera.Position.Z < -32f)
             {
-                Camera.Position.Z += 64;
+                Camera.Position.Z += 64f;
                 Content.Chunk.DownZ();
-            }
-        }
-
-        private static void RotationUpdate()
-        {
-            var Moved = KeyboardMouse.MouseMoved();
-            Camera.RotationX += Moved.X * 0.003f;
-            Camera.RotationY += Moved.Y * 0.003f;
-
-            if (Camera.RotationY < -Math.PI * 0.5)
-            {
-                Camera.RotationY = (float)(-Math.PI * 0.5);
-            }
-            else if (Camera.RotationY > Math.PI * 0.5)
-            {
-                Camera.RotationY = (float)(Math.PI * 0.5);
             }
         }
 

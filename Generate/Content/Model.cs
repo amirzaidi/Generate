@@ -1,17 +1,126 @@
-﻿using SharpDX;
+﻿using Generate.D3D;
+using SharpDX;
+using SharpDX.Direct3D11;
+using SharpDX.DXGI;
+using Buffer = SharpDX.Direct3D11.Buffer;
 using System;
+using SharpDX.Direct3D;
 
 namespace Generate.Content
 {
-    class Model
+    class Model : IDisposable
     {
         internal Vector3 MoveWorld;
         internal float Rotate = 0;
         internal float Scale = 1;
 
-        internal void Render()
-        {
+        private int[] Indices;
+        private Buffer VertexBuffer;
+        private Buffer IndexBuffer;
 
+        private Texture2D Texture;
+        private ShaderResourceView TextureView;
+
+        struct ShuffleXY
+        {
+            public int X;
+            public int Y;
+        }
+
+        internal Model(Vector3 MoveWorld, Vertex[] Vertices, int[] Indices, int Seed)
+        {
+            this.MoveWorld = MoveWorld;
+
+            // Create the vertex buffer.
+            VertexBuffer = Buffer.Create(Program.Renderer.Device, BindFlags.VertexBuffer, Vertices);
+
+            // Create the index buffer.
+            this.Indices = Indices;
+            IndexBuffer = Buffer.Create(Program.Renderer.Device, BindFlags.IndexBuffer, this.Indices);
+
+            var Rand = new Random(Seed);
+            int Size = (int)Math.Pow(2, Rand.Next(3, 7));
+
+            var Shuffles = new System.Collections.Generic.List<ShuffleXY>();
+            for (int i = 0; i < Size * 2; i++)
+            {
+                Shuffles.Add(new ShuffleXY
+                {
+                    X = Rand.Next(Size),
+                    Y = Rand.Next(Size)
+                });
+            }
+
+            var Red = (byte)Rand.Next(0, byte.MaxValue + 1);
+            var SelectMax = Rand.Next(0, 2);
+            var Max = (byte)Rand.Next(64, 192);
+
+            // Allocate DataStream to receive the WIC image pixels
+            using (var buffer = new DataStream(Size * Size * 4, true, true))
+            {
+                var Bytes = new byte[2];
+                for (int X = 0; X < Size; X++)
+                {
+                    for (int Y = 0; Y < Size; Y++)
+                    {
+                        buffer.WriteByte(Red);
+
+                        if (Shuffles.Contains(new ShuffleXY { X = X, Y = Y }))
+                        {
+                            Rand.NextBytes(Bytes);
+                            Bytes[SelectMax] = (byte)(Bytes[SelectMax] % Max);
+                        }
+
+                        buffer.Write(Bytes, 0, 2);
+
+                        //buffer.WriteByte(200);
+                        //buffer.WriteByte((byte)(64 * (X + MoveWorld.X) % 256));
+                        //buffer.WriteByte((byte)(32 * (Y + MoveWorld.Z) % 256));
+
+                        buffer.WriteByte(byte.MaxValue);
+                    }
+                }
+
+                // Copy the content of the WIC to the buffer
+                Texture = new Texture2D(Program.Renderer.Device, new Texture2DDescription
+                {
+                    Width = Size,
+                    Height = Size,
+                    ArraySize = 1,
+                    BindFlags = BindFlags.ShaderResource,
+                    Usage = ResourceUsage.Immutable,
+                    CpuAccessFlags = CpuAccessFlags.None,
+                    Format = Format.R8G8B8A8_UNorm,
+                    MipLevels = 1,
+                    OptionFlags = ResourceOptionFlags.None,
+                    SampleDescription = new SampleDescription(1, 0),
+                }, new DataRectangle(buffer.DataPointer, Size * 4));
+            }
+
+            TextureView = new ShaderResourceView(Program.Renderer.Device, Texture);
+        }
+
+        internal void Render(Vector2 MoveChunks)
+        {
+            var Move = MoveWorld;
+            Move.X += MoveChunks.X;
+            Move.Z += MoveChunks.Y;
+            
+            Program.Renderer.Shader.UpdateBuffers(Move, Rotate, Scale);
+
+            Program.Renderer.Device.ImmediateContext.InputAssembler.SetVertexBuffers(0, new VertexBufferBinding(VertexBuffer, Utilities.SizeOf<Vertex>(), 0));
+            Program.Renderer.Device.ImmediateContext.InputAssembler.SetIndexBuffer(IndexBuffer, Format.R32_UInt, 0);
+
+            Program.Renderer.Device.ImmediateContext.PixelShader.SetShaderResource(0, TextureView);
+            Program.Renderer.Device.ImmediateContext.DrawIndexed(Indices.Length, 0, 0);
+        }
+
+        public void Dispose()
+        {
+            Utilities.Dispose(ref TextureView);
+            Utilities.Dispose(ref Texture);
+            Utilities.Dispose(ref IndexBuffer);
+            Utilities.Dispose(ref VertexBuffer);
         }
     }
 }

@@ -15,16 +15,9 @@ namespace Generate.Input
             internal int Presses = 0;
             internal int Pressed = 0;
         }
-
-        internal struct MouseMovement
-        {
-            internal long X;
-            internal long Y;
-        }
         
         private static Stopwatch Timer = new Stopwatch();
         private static Dictionary<Keys, KeyPressDuration> Keys = new Dictionary<Keys, KeyPressDuration>();
-        private static MouseMovement Mouse;
 
         public static void StartCapture()
         {
@@ -39,15 +32,15 @@ namespace Generate.Input
             Device.RegisterDevice(UsagePage.Generic, UsageId.GenericMouse, DeviceFlags.None);
 
             Device.KeyboardInput += KeyboardEvent;
-            Device.MouseInput += MouseEvent;
+            Device.MouseInput += MouseMoved;
         }
 
-        public static void MouseEvent(object s, MouseInputEventArgs e)
+        public static void MouseMoved(object s, MouseInputEventArgs e)
         {
             lock (Timer)
             {
-                Mouse.X += e.X;
-                Mouse.Y += e.Y;
+                Camera.RotationX += e.X;
+                Camera.RotationY += e.Y;
             }
         }
 
@@ -61,10 +54,10 @@ namespace Generate.Input
             {
                 Up(e.Key);
             }
-            /*else if (e.State == KeyState.SystemKeyDown)
+            else if (e.State == KeyState.SystemKeyDown)
             {
-                System.Console.WriteLine(e.Key);
-            }*/
+                Console.WriteLine("System + " + e.Key);
+            }
         }
 
         public static void MouseDown(object s, MouseEventArgs e)
@@ -188,18 +181,6 @@ namespace Generate.Input
             {
                 Result[i] = Duration(Keys[i]);
             }
-
-            return Result;
-        }
-
-        public static MouseMovement MouseMoved()
-        {
-            var Result = Mouse;
-            Mouse = new MouseMovement
-            {
-                X = 0,
-                Y = 0
-            };
 
             return Result;
         }

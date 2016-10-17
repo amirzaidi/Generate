@@ -23,6 +23,7 @@
     <DefineConstants>DEBUG;TRACE</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
+    <UseVSHostingProcess>true</UseVSHostingProcess>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
     <PlatformTarget>AnyCPU</PlatformTarget>
@@ -80,6 +81,7 @@
   <ItemGroup>
     <Compile Include="Content\Chunk.cs" />
     <Compile Include="Content\Model.cs" />
+    <Compile Include="Content\DefaultModels.cs" />
     <Compile Include="D2D\Overlay.cs" />
     <Compile Include="D3D\Depth.cs" />
     <Compile Include="D3D\Renderer.cs" />

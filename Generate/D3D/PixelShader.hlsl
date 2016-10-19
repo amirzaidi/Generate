@@ -55,5 +55,5 @@ float4 PS(Pixel Input) : SV_Target
         }
     }
     
-    return saturate(saturate(float4(LightColor, 1) * LightIntensity) * TexColor);
+    return float4(saturate(saturate(float4(LightColor, 1) * LightIntensity) * TexColor).xyz, 1);
 }

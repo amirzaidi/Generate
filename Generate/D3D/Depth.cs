@@ -112,7 +112,7 @@ namespace Generate.D3D
             SlopeScaledDepthBias = 0.0f
         };
 
-        internal const float ScreenFar = 320.0f;
+        internal const float ScreenFar = 512.0f;
         internal const float ScreenNear = 1f;
     }
 }

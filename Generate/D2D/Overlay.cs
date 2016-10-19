@@ -10,11 +10,11 @@ namespace Generate.D2D
     class Overlay : IDisposable
     {
         private TextFormat TextFormat;
-        public DeviceContext Context2D;
+        internal DeviceContext Context2D;
         private SolidColorBrush Brush;
         private static BitmapProperties1 Properties = new BitmapProperties1(new PixelFormat(Format.R8G8B8A8_UNorm, AlphaMode.Premultiplied), 96, 96, BitmapOptions.Target | BitmapOptions.CannotDraw);
 
-        public Overlay(SharpDX.Direct3D11.Device Device3D, Texture2D BackBuffer)
+        internal Overlay(SharpDX.Direct3D11.Device Device3D, Texture2D BackBuffer)
         {
             using (var FontFactory = new SharpDX.DirectWrite.Factory())
             {
@@ -32,17 +32,17 @@ namespace Generate.D2D
             Context2D.Target = new Bitmap1(Context2D, BackBuffer.QueryInterface<Surface>());
         }
 
-        public void Start()
+        internal void Start()
         {
             Context2D.BeginDraw();
         }
 
-        public void Draw(string Text, int X, int Y, int Width, int Height)
+        internal void Draw(string Text, int X, int Y, int Width, int Height)
         {
             Context2D.DrawText(Text, TextFormat, new RectangleF(X, Y, Width, Height), Brush);
         }
 
-        public void DrawCrosshair()
+        internal void DrawCrosshair()
         {
             var MidWidth = Program.Renderer.Resolution.Width / 2;
             var MidHeight = Program.Renderer.Resolution.Height / 2;
@@ -51,7 +51,7 @@ namespace Generate.D2D
             Context2D.DrawLine(new SharpDX.Mathematics.Interop.RawVector2(MidWidth - 10, MidHeight), new SharpDX.Mathematics.Interop.RawVector2(MidWidth + 10, MidHeight), Brush);
         }
 
-        public void End()
+        internal void End()
         {
             Context2D.EndDraw();
         }

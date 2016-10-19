@@ -26,7 +26,7 @@ namespace Generate.Procedure
             BG = new RawColor4(BGFloat[0], BGFloat[1], BGFloat[2], 1);
 
             AvgTexDensity = Rand.Next(1, 6);
-            HeightIntensity = (float)Math.Pow(Rand.NextDouble(), 3) * 64f;
+            HeightIntensity = (float)Math.Pow(Rand.NextDouble(), 5) * 128f;
         }
 
         internal static float[,] GetHeights(int X, int Z)

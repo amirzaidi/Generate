@@ -18,6 +18,8 @@ Texture2D DepthMapTexture : register(t1);
 
 SamplerState Sampler : register(s0);
 
+static const float PI = 3.14159265f;
+
 float4 PS(Pixel Input) : SV_Target
 {
     if (UseLight == 0)
@@ -45,7 +47,11 @@ float4 PS(Pixel Input) : SV_Target
         if (lightDepthValue < depthValue)
         {
             // Calculate the amount of light on this pixel.
-            LightIntensity += saturate(dot(Input.Normal, Input.LightPos)) * 0.95;
+            LightIntensity += saturate(dot(Input.Normal, float3(0, 1, 0)) * pow(
+                cos(Input.LightViewPosition.x / Input.LightViewPosition.w * PI / 2.0f)
+                * cos(Input.LightViewPosition.y / Input.LightViewPosition.w * PI / 2.0f)
+            , 2))
+            * 0.95;
         }
     }
     

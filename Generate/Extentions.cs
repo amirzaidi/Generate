@@ -11,7 +11,7 @@ namespace Generate
             return Encoding.ASCII.GetBytes(In);
         }
 
-        internal static RawColor4 ToRGB(this float[] hsb)
+        internal static float[] ToRGB(this float[] hsb)
         {
             var hue = hsb[0] % 1.0f;
             var saturation = hsb[1];
@@ -64,7 +64,7 @@ namespace Generate
                 }
             }
 
-            return new RawColor4(r, g, b, 1.0f);
+            return new[] { r, g, b };
         }
     }
 }

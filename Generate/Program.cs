@@ -40,19 +40,24 @@ namespace Generate
 
         static void Frame()
         {
-            var UpdateTask = Processor.Process();
-            using (var RenderTarget = Renderer.PrepareFrame(Constants.BG))
+            Task.WhenAll(Processor.Process());
+
+            using (var RenderTarget = Renderer.PrepareShadow())
             {
-                Task.WhenAll(UpdateTask);
                 Content.Chunk.RenderVisible();
             }
 
-            Overlay.Start();
-            Overlay.DrawCrosshair();
-            Overlay.Draw($"Coords ({Camera.Position.X}, {Camera.Position.Y}, {Camera.Position.Z})", 10, 10, 500, 20);
-            Overlay.Draw($"Rotation ({Camera.RotationX}, {Camera.RotationY})", 10, 30, 500, 20);
-            Overlay.Draw($"Frames ({Frames}, VSync {VSync})", 10, 50, 500, 20);
-            Overlay.End();
+            using (var RenderTarget = Renderer.PrepareFrame(Constants.BG))
+            {
+                Content.Chunk.RenderVisible();
+            }
+
+            Overlay?.Start();
+            Overlay?.DrawCrosshair();
+            Overlay?.Draw($"Coords ({Camera.Position.X}, {Camera.Position.Y}, {Camera.Position.Z})", 10, 10, 500, 20);
+            Overlay?.Draw($"Rotation ({Camera.RotationX}, {Camera.RotationY})", 10, 30, 500, 20);
+            Overlay?.Draw($"Frames ({Frames}, VSync {VSync})", 10, 50, 500, 20);
+            Overlay?.End();
 
             Renderer.FinishFrame(VSync);
         }

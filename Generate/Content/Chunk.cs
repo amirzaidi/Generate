@@ -7,15 +7,15 @@ namespace Generate.Content
 {
     class Chunk : IDisposable
     {
-        private static Chunk[,] Chunks = new Chunk[5, 5];
+        private static Chunk[,] Chunks = new Chunk[7, 7];
         private static int MovedX = 0, MovedZ = 0;
         private const float Size = 64f;
 
         static Chunk()
         {
-            for (int X = 0; X < 5; X++)
+            for (int X = 0; X < 7; X++)
             {
-                for (int Z = 0; Z < 5; Z++)
+                for (int Z = 0; Z < 7; Z++)
                 {
                     Chunks[X, Z] = new Chunk(X, Z);
                 }
@@ -24,11 +24,11 @@ namespace Generate.Content
 
         internal static void RenderVisible()
         {
-            for (int X = 0; X < 5; X++)
+            for (int X = 0; X < 7; X++)
             {
-                for (int Z = 0; Z < 5; Z++)
+                for (int Z = 0; Z < 7; Z++)
                 {
-                    Chunks[X, Z].Render(X - 2, Z - 2);
+                    Chunks[X, Z].Render(X - 3, Z - 3);
                 }
             }
         }
@@ -36,25 +36,25 @@ namespace Generate.Content
         internal static void UpX()
         {
             MovedX++;
-            Parallel.For(0, 5, Z =>
+            Parallel.For(0, 7, Z =>
             {
                 Chunks[0, Z].Dispose();
-                for (int X = 0; X < 4; X++)
+                for (int X = 0; X < 6; X++)
                 {
                     Chunks[X, Z] = Chunks[X + 1, Z];
                 }
 
-                Chunks[4, Z] = new Chunk(4 + MovedX, Z + MovedZ);
+                Chunks[6, Z] = new Chunk(6 + MovedX, Z + MovedZ);
             });
         }
 
         internal static void DownX()
         {
             MovedX--;
-            Parallel.For(0, 5, Z =>
+            Parallel.For(0, 7, Z =>
             {
-                Chunks[4, Z].Dispose();
-                for (int X = 4; X > 0; X--)
+                Chunks[6, Z].Dispose();
+                for (int X = 6; X > 0; X--)
                 {
                     Chunks[X, Z] = Chunks[X - 1, Z];
                 }
@@ -66,25 +66,25 @@ namespace Generate.Content
         internal static void UpZ()
         {
             MovedZ++;
-            Parallel.For(0, 5, X =>
+            Parallel.For(0, 7, X =>
             {
                 Chunks[X, 0].Dispose();
-                for (int Z = 0; Z < 4; Z++)
+                for (int Z = 0; Z < 6; Z++)
                 {
                     Chunks[X, Z] = Chunks[X, Z + 1];
                 }
 
-                Chunks[X, 4] = new Chunk(X + MovedX, 4 + MovedZ);
+                Chunks[X, 6] = new Chunk(X + MovedX, 6 + MovedZ);
             });
         }
 
         internal static void DownZ()
         {
             MovedZ--;
-            Parallel.For(0, 5, X =>
+            Parallel.For(0, 7, X =>
             {
-                Chunks[X, 4].Dispose();
-                for (int Z = 4; Z > 0; Z--)
+                Chunks[X, 6].Dispose();
+                for (int Z = 6; Z > 0; Z--)
                 {
                     Chunks[X, Z] = Chunks[X, Z - 1];
                 }
@@ -104,21 +104,24 @@ namespace Generate.Content
         private ConcurrentBag<Model> Models = new ConcurrentBag<Model>();
         private bool Loaded = false;
         private Worker Random;
+        private float[,] Heights;
 
         internal Chunk(int X, int Z)
         {
-            Random = new Worker($"{X}.{Z}.chunk");
-
             Task.Run(async delegate
             {
-                Models.Add(DefaultModels.Ground(Random.Next()));
+                Random = new Worker($"{X}.{Z}.chunk");
+                Heights = Constants.GetHeights(X, Z);
+
+                await Task.Delay(50);
+                Models.Add(DefaultModels.Ground(Random.Next(), Heights));
                 await Task.Delay(50);
                 Models.Add(DefaultModels.Sphere(Random.Next()));
                 await Task.Delay(50);
                 Models.Add(DefaultModels.Triangle(Random.Next()));
 
                 Loaded = true;
-                Console.WriteLine($"Created {X}, {Z}");
+                Console.WriteLine($"Created {X}, {Z} at {Heights[0,0]} {Heights[0, 1]} {Heights[1, 0]} {Heights[1, 1]}");
             });
         }
 

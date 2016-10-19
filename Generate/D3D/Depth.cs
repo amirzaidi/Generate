@@ -11,20 +11,26 @@ namespace Generate.D3D
         private DepthStencilState DepthStencilState;
         internal DepthStencilView DepthStencilView;
         private RasterizerState RasterizerState;
+        private ModeDescription Resolution;
 
-        internal Depth(Device Device, ModeDescription Resolution)
+        internal Depth(Device Device, ModeDescription Resolution, SampleDescription AA)
         {
+            this.Resolution = Resolution;
+
             DepthStencilState = new DepthStencilState(Device, StencilDesc);
             Device.ImmediateContext.OutputMerger.SetDepthStencilState(DepthStencilState, 1);
 
-            DepthStencilView = new DepthStencilView(Device, new Texture2D(Device, BufferDesc(Resolution.Width, Resolution.Height)));
+            DepthStencilView = new DepthStencilView(Device, new Texture2D(Device, BufferDesc(Resolution.Width, Resolution.Height, AA)));
 
             // Create the rasterizer state from the description we just filled out and set the rasterizer state.
             RasterizerState = new RasterizerState(Device, RasterDesc);
-            Device.ImmediateContext.Rasterizer.State = RasterizerState;
+        }
 
-            // Setup and create the viewport for rendering.
-            Device.ImmediateContext.Rasterizer.SetViewport(0, 0, Resolution.Width, Resolution.Height, 0, 1);
+        internal void Prepare(DeviceContext Context)
+        {
+            Context.Rasterizer.State = RasterizerState;
+            Context.Rasterizer.SetViewport(0, 0, Resolution.Width, Resolution.Height, 0, 1);
+            Context.ClearDepthStencilView(DepthStencilView, DepthStencilClearFlags.Depth, 1, 0);
         }
 
         public void Dispose()
@@ -62,7 +68,7 @@ namespace Generate.D3D
             }
         };
 
-        private static Texture2DDescription BufferDesc(int Width, int Height)
+        private static Texture2DDescription BufferDesc(int Width, int Height, SampleDescription AA)
         {
             // Initialize and set up the description of the depth buffer.
             return new Texture2DDescription
@@ -72,7 +78,7 @@ namespace Generate.D3D
                 MipLevels = 1,
                 ArraySize = 1,
                 Format = Format.D24_UNorm_S8_UInt,
-                SampleDescription = Renderer.AntiAliasing,
+                SampleDescription = AA,
                 Usage = ResourceUsage.Default,
                 BindFlags = BindFlags.DepthStencil,
                 CpuAccessFlags = CpuAccessFlags.None,
@@ -106,7 +112,7 @@ namespace Generate.D3D
             SlopeScaledDepthBias = 0.0f
         };
 
-        internal const float ScreenFar = 10000.0f;
-        internal const float ScreenNear = 0.01f;
+        internal const float ScreenFar = 256.0f;
+        internal const float ScreenNear = 1f;
     }
 }

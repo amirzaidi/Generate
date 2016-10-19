@@ -4,11 +4,20 @@
     float4x4 View;
     float4x4 Projection;
     float4x4 WVP;
+
+    float4x4 LightView;
+    float4x4 LightProjection;
+};
+
+cbuffer VertexLight
+{
+    float3 LightPosition;
+    float UseLight;
 };
 
 struct Vertex
 {
-    float4 Position : POSITION;
+    float3 Position : POSITION;
     float2 TexCoord : TEXCOORD0;
     float3 Normal : NORMAL;
 };
@@ -18,24 +27,24 @@ struct Pixel
     float4 Position : SV_POSITION;
     float2 TexCoord : TEXCOORD0;
     float3 Normal : NORMAL;
+    float4 LightViewPosition : TEXCOORD1;
+    float3 LightPos : TEXCOORD2;
 };
 
 Pixel VS(Vertex Input)
 {
     Pixel Output;
-
-	// Change the position vector to be 4 units for proper matrix calculations.
-    Input.Position.w = 1.0f;
-
-	// Calculate the position of the vertex against the world, view, and projection matrices.
-    //Output.Position = mul(Input.Position, World);
-	//Output.Position = mul(Output.Position, View);
-	//Output.Position = mul(Output.Position, Projection);
-    Output.Position = mul(Input.Position, WVP);
-
-	// Store the input color for the pixel shader to use.
+    
     Output.TexCoord = Input.TexCoord;
     Output.Normal = normalize(mul(Input.Normal, (float3x3) World));
+    Output.Position = mul(mul(mul(float4(Input.Position, 1), World), LightView), LightProjection);
+
+    if (UseLight == 1)
+    {
+        Output.LightViewPosition = Output.Position;
+        Output.Position = mul(float4(Input.Position, 1), WVP);
+        Output.LightPos = normalize(LightPosition.xyz - mul(Input.Position, (float3x3) World));
+    }
     
     return Output;
 }

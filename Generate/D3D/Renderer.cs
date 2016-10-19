@@ -14,6 +14,7 @@ namespace Generate.D3D
         internal Device Device;
         private SwapChain1 SwapChain;
         private Depth Depth;
+        private Depth ShadowDepth;
         private ModeDescription Resolution = new ModeDescription
         {
             Width = 0,
@@ -59,12 +60,17 @@ namespace Generate.D3D
 
             Window.Borderless(Resolution.Width, Resolution.Height);
             ResizeBuffers();
-            
-            Depth = new Depth(Device, Resolution);
 
-            var Perspective = Matrix.PerspectiveFovLH((float)(Math.PI / 4), (float)(Resolution.Width) / Resolution.Height, Depth.ScreenNear, Depth.ScreenFar);
+            var Perspective = Matrix.PerspectiveFovLH((float)(Math.PI / 2), (float)(Resolution.Width) / Resolution.Height, Depth.ScreenNear, Depth.ScreenFar);
             Perspective.Transpose();
             Shader = new Shader(Device, Perspective);
+
+            Depth = new Depth(Device, Resolution, AntiAliasing);
+            ShadowDepth = new Depth(Device, new ModeDescription
+            {
+                Width = 1024 * 4,
+                Height = 1024 * 4
+            }, new SampleDescription(1, 0));
 
             AntiAliasedBackBuffer = new Texture2D(Device, new Texture2DDescription
             {
@@ -84,12 +90,31 @@ namespace Generate.D3D
             SwapChain.ResizeBuffers(2, Resolution.Width, Resolution.Height, Resolution.Format, SwapChainFlags.AllowModeSwitch);
         }
 
+        internal RenderTargetView PrepareShadow()
+        {
+            ShadowDepth.Prepare(Device.ImmediateContext);
+
+            var TargetView = new RenderTargetView(Device, Shader.ShadowDepthMap);
+            Device.ImmediateContext.OutputMerger.SetRenderTargets(ShadowDepth.DepthStencilView, TargetView);
+            Device.ImmediateContext.ClearRenderTargetView(TargetView, new RawColor4(0, 0, 0, 1));
+
+            var ShadowCoords = Input.Camera.Position;
+            ShadowCoords.Y = (float)Math.Pow(2, 7);
+            Shader.DepthMode(Device.ImmediateContext, ShadowCoords);
+            
+            return TargetView;
+        }
+
         internal RenderTargetView PrepareFrame(RawColor4 Background)
         {
+            Depth.Prepare(Device.ImmediateContext);
+
             var TargetView = new RenderTargetView(Device, AntiAliasedBackBuffer);
             Device.ImmediateContext.OutputMerger.SetRenderTargets(Depth.DepthStencilView, TargetView);
-            Device.ImmediateContext.ClearDepthStencilView(Depth.DepthStencilView, DepthStencilClearFlags.Depth, 1, 0);
             Device.ImmediateContext.ClearRenderTargetView(TargetView, Background);
+
+            Shader.RenderMode(Device.ImmediateContext);
+
             return TargetView;
         }
 

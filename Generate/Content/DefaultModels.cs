@@ -43,7 +43,7 @@ namespace Generate.Content
 
                     Vertices[vertexCount++] = new Vertex
                     {
-                        Position = new SharpDX.Vector4(dx * radius, dy * radius, dz * radius, 1),
+                        Position = new SharpDX.Vector3(dx * radius, dy * radius, dz * radius),
                         TexCoords = new SharpDX.Vector2(u, v),
                         Normal = new SharpDX.Vector3(dx, dy, dz)
                     };
@@ -74,28 +74,28 @@ namespace Generate.Content
             return new Model(new SharpDX.Vector3(5, 0, 0), Vertices, Indices, Seed);
         }
 
-        internal static Model Ground(int Seed)
+        internal static Model Ground(int Seed, float[,] Heights)
         {
             var Vertices = new[]
             {
                 new Vertex
                 {
-                    Position = new SharpDX.Vector4(-32, 0, -32, 1),
+                    Position = new SharpDX.Vector3(-32, Heights[0, 0], -32),
                     TexCoords = new SharpDX.Vector2(0, 0)
                 },
                 new Vertex
                 {
-                    Position = new SharpDX.Vector4(-32, 0, 32, 1),
+                    Position = new SharpDX.Vector3(-32, Heights[0, 1], 32),
                     TexCoords = new SharpDX.Vector2(0, 1)
                 },
                 new Vertex
                 {
-                    Position = new SharpDX.Vector4(32, 0, 32, 1),
+                    Position = new SharpDX.Vector3(32, Heights[1, 1], 32),
                     TexCoords = new SharpDX.Vector2(1, 1)
                 },
                 new Vertex
                 {
-                    Position = new SharpDX.Vector4(32, 0, -32, 1),
+                    Position = new SharpDX.Vector3(32, Heights[1, 0], -32),
                     TexCoords = new SharpDX.Vector2(1, 0)
                 },
             };
@@ -114,19 +114,19 @@ namespace Generate.Content
             {
                 new Vertex
                 {
-                    Position = new SharpDX.Vector4(-1, -1, 0, 1),
+                    Position = new SharpDX.Vector3(-1, -1, 0),
                     Normal = new SharpDX.Vector3(0, 0, -1),
                     TexCoords = new SharpDX.Vector2(0, 0) //Bottom left
                 },
                 new Vertex
                 {
-                    Position = new SharpDX.Vector4(0, 1, 0, 1),
+                    Position = new SharpDX.Vector3(0, 1, 0),
                     Normal = new SharpDX.Vector3(0, 0, -1),
                     TexCoords = new SharpDX.Vector2(1, 0.5f) //Top middle
                 },
                 new Vertex
                 {
-                    Position = new SharpDX.Vector4(1, -1, 0, 1),
+                    Position = new SharpDX.Vector3(1, -1, 0),
                     Normal = new SharpDX.Vector3(0, 0, -1),
                     TexCoords = new SharpDX.Vector2(0, 1) //Bottom right
                 }

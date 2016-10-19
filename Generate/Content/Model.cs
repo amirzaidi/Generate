@@ -75,7 +75,7 @@ namespace Generate.Content
             Move.X += MoveChunks.X;
             Move.Z += MoveChunks.Y;
             
-            Program.Renderer.Shader.UpdateBuffers(Move, Rotate, Scale);
+            Program.Renderer.Shader.UpdateMatrices(Move, Rotate, Scale);
 
             Program.Renderer.Device.ImmediateContext.InputAssembler.SetVertexBuffers(0, new VertexBufferBinding(VertexBuffer, Utilities.SizeOf<Vertex>(), 0));
             Program.Renderer.Device.ImmediateContext.InputAssembler.SetIndexBuffer(IndexBuffer, Format.R32_UInt, 0);

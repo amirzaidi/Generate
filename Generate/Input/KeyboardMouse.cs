@@ -108,23 +108,35 @@ namespace Generate.Input
 
         private static void Down(Keys Key)
         {
-            lock (Keys[Key])
+            try
             {
-                Keys[Key].Presses++;
-
-                if (Keys[Key].Ticks >= 0)
+                lock (Keys[Key])
                 {
-                    Keys[Key].Ticks -= Timer.ElapsedTicks;
+                    Keys[Key].Presses++;
+
+                    if (Keys[Key].Ticks >= 0)
+                    {
+                        Keys[Key].Ticks -= Timer.ElapsedTicks;
+                    }
                 }
+            }
+            catch (KeyNotFoundException)
+            {
             }
         }
 
         private static void Up(Keys Key)
         {
-            lock (Keys[Key])
+            try
             {
-                Keys[Key].Pressed++;
-                Keys[Key].Ticks += Timer.ElapsedTicks;
+                lock (Keys[Key])
+                {
+                    Keys[Key].Pressed++;
+                    Keys[Key].Ticks += Timer.ElapsedTicks;
+                }
+            }
+            catch (KeyNotFoundException)
+            {
             }
         }
 

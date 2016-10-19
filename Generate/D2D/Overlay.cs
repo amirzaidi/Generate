@@ -44,8 +44,11 @@ namespace Generate.D2D
 
         public void DrawCrosshair()
         {
-            Context2D.DrawLine(new SharpDX.Mathematics.Interop.RawVector2(960, 530), new SharpDX.Mathematics.Interop.RawVector2(960, 550), Brush);
-            Context2D.DrawLine(new SharpDX.Mathematics.Interop.RawVector2(950, 540), new SharpDX.Mathematics.Interop.RawVector2(970, 540), Brush);
+            var MidWidth = Program.Renderer.Resolution.Width / 2;
+            var MidHeight = Program.Renderer.Resolution.Height / 2;
+
+            Context2D.DrawLine(new SharpDX.Mathematics.Interop.RawVector2(MidWidth, MidHeight - 10), new SharpDX.Mathematics.Interop.RawVector2(MidWidth, MidHeight + 10), Brush);
+            Context2D.DrawLine(new SharpDX.Mathematics.Interop.RawVector2(MidWidth - 10, MidHeight), new SharpDX.Mathematics.Interop.RawVector2(MidWidth + 10, MidHeight), Brush);
         }
 
         public void End()

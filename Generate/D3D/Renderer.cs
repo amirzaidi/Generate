@@ -10,12 +10,12 @@ namespace Generate.D3D
 {
     class Renderer : IDisposable
     {
-        internal static SampleDescription AntiAliasing = new SampleDescription(8, 0);
+        internal static SampleDescription AntiAliasing = new SampleDescription(1, 0);
         internal Device Device;
         private SwapChain1 SwapChain;
         private Depth Depth;
         private Depth ShadowDepth;
-        private ModeDescription Resolution = new ModeDescription
+        internal ModeDescription Resolution = new ModeDescription
         {
             Width = 0,
             Height = 0
@@ -43,7 +43,8 @@ namespace Generate.D3D
 
             using (var Factory = new Factory2())
             {
-                Device = new Device(Factory.Adapters1[0], DeviceCreationFlags.Debug | DeviceCreationFlags.BgraSupport);
+                //Device = new Device(Factory.Adapters1[0], DeviceCreationFlags.Debug | DeviceCreationFlags.BgraSupport);
+                Device = new Device(Factory.Adapters1[0], DeviceCreationFlags.BgraSupport);
                 SwapChain = new SwapChain1(Factory, Device, Window.Handle, ref SwapChainDescription);
 
                 foreach (var Output in Factory.Adapters.First().Outputs)

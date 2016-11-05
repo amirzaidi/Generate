@@ -7,9 +7,10 @@ namespace Generate.Input
     {
         public static Task[] Process()
         {
+            MovementUpdate();
+
             return new[]
             {
-                Task.Factory.StartNew(MovementUpdate),
                 Task.Factory.StartNew(ConstantsUpdate)
             };
         }

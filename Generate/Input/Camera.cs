@@ -20,14 +20,11 @@ namespace Generate.Input
         {
             get
             {
-                var Rotation = Camera.Rotation;
-                var Up = Vector3.TransformCoordinate(Vector3.UnitY, Rotation);
-                var LookAt = Vector3.TransformCoordinate(Vector3.UnitZ, Rotation);
-
-                var View = Matrix.LookAtLH(Position, Position + LookAt, Up);
-                View.Transpose();
-
-                return View;
+                var Rot = Rotation;
+                var Up = Vector3.TransformCoordinate(Vector3.UnitY, Rot);
+                var LookAt = Vector3.TransformCoordinate(Vector3.UnitZ, Rot);
+                
+                return Matrix.Transpose(Matrix.LookAtLH(Position, Position + LookAt, Up));
             }
         }
 

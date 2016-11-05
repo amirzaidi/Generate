@@ -29,25 +29,34 @@ namespace Generate
             using (var Loop = Window.Loop())
             {
                 KeyboardMouse.StartCapture();
+                Watch = new System.Diagnostics.Stopwatch();
+                Watch.Start();
 
                 while (!Close && Loop.NextFrame())
                 {
                     Frame();
-                    Frames++;
                 }
             }
         }
+
+        static System.Diagnostics.Stopwatch Watch;
+        static float FPS = 0f;
 
         static void Frame()
         {
             Task.WhenAll(Processor.Process());
 
-            using (var RenderTarget = Renderer.PrepareShadow())
+            Content.Model ToLoad;
+            if (Content.Model.ModelsToLoad.TryPop(out ToLoad))
             {
-                Content.Chunk.RenderVisible();
+                ToLoad.Load();
             }
 
-            using (var RenderTarget = Renderer.PrepareFrame(Constants.BG))
+            Renderer.PrepareShadow();
+            Content.Chunk.RenderVisible();
+            Renderer.EndShadow();
+
+            using (Renderer.PrepareCamera(Constants.BG))
             {
                 Content.Chunk.RenderVisible();
             }
@@ -56,16 +65,24 @@ namespace Generate
             Overlay?.DrawCrosshair();
             Overlay?.Draw($"Coords ({Camera.Position.X}, {Camera.Position.Y}, {Camera.Position.Z})", 10, 10, 500, 20);
             Overlay?.Draw($"Rotation ({Camera.RotationX}, {Camera.RotationY})", 10, 30, 500, 20);
-            Overlay?.Draw($"Frames ({Frames}, VSync {VSync})", 10, 50, 500, 20);
+            Overlay?.Draw($"Frames ({FPS}, VSync {VSync})", 10, 50, 500, 20);
             Overlay?.End();
 
-            Renderer.FinishFrame(VSync);
+            Frames++;
+            if (Watch.ElapsedMilliseconds >= 1000)
+            {
+                FPS = (float)Frames / Watch.ElapsedMilliseconds * 1000;
+                Watch.Restart();
+                Frames = 0;
+            }
+
+            Renderer.EndCamera(VSync);
         }
 
-        static void LogLine(object In, string From = null)
+        internal static void LogLine(object In, string From = null)
             => Log(In + "\r\n", From);
 
-        static void Log(object In, string From = null)
+        internal static void Log(object In, string From = null)
             => Console.Write($"[{DateTime.Now.ToLongTimeString()}] {From ?? "Main"} - {In}");
     }
 }

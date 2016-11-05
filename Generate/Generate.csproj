@@ -85,7 +85,9 @@
     <Compile Include="D2D\Overlay.cs" />
     <Compile Include="D3D\Depth.cs" />
     <Compile Include="D3D\Renderer.cs" />
-    <Compile Include="D3D\Shader.cs" />
+    <Compile Include="D3D\CameraShader.cs" />
+    <Compile Include="D3D\IShader.cs" />
+    <Compile Include="D3D\ShadowShader.cs" />
     <Compile Include="D3D\Vertex.cs" />
     <Compile Include="Extentions.cs" />
     <Compile Include="Input\Camera.cs" />
@@ -103,10 +105,16 @@
     <None Include="packages.config" />
   </ItemGroup>
   <ItemGroup>
-    <Content Include="D3D\PixelShader.hlsl">
+    <Content Include="D3D\ShadowShaderPixel.hlsl">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
-    <Content Include="D3D\VertexShader.hlsl">
+    <Content Include="D3D\CameraShaderPixel.hlsl">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="D3D\ShadowShaderVertex.hlsl">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="D3D\CameraShaderVertex.hlsl">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
   </ItemGroup>

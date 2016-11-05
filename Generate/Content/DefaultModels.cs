@@ -8,42 +8,42 @@ namespace Generate.Content
         // Credits to SharpDX Toolkit
         internal static Model Sphere(int Seed)
         {
-            int tessellation = 16;
-            float diameter = 4.0f;
+            int Tesselation = 8;
+            float Diameter = 4.0f;
 
-            int verticalSegments = tessellation;
-            int horizontalSegments = tessellation * 2;
+            int VerticalSegments = Tesselation;
+            int HorizontalSegments = Tesselation * 2;
 
-            var Vertices = new Vertex[(verticalSegments + 1) * (horizontalSegments + 1)];
-            var Indices = new int[(verticalSegments) * (horizontalSegments + 1) * 6];
+            var Vertices = new Vertex[(VerticalSegments + 1) * (HorizontalSegments + 1)];
+            var Indices = new int[(VerticalSegments) * (HorizontalSegments + 1) * 6];
 
-            float radius = diameter / 2;
+            float Radius = Diameter / 2;
 
-            int vertexCount = 0;
+            int VertexCount = 0;
             // Create rings of vertices at progressively higher latitudes.
-            for (int i = 0; i <= verticalSegments; i++)
+            for (int i = 0; i <= VerticalSegments; i++)
             {
-                float v = 1.0f - (float)i / verticalSegments;
+                float v = 1.0f - (float)i / VerticalSegments;
 
-                var latitude = (float)((i * Math.PI / verticalSegments) - Math.PI / 2.0);
+                var latitude = (float)((i * Math.PI / VerticalSegments) - Math.PI / 2.0);
                 var dy = (float)Math.Sin(latitude);
                 var dxz = (float)Math.Cos(latitude);
 
                 // Create a single ring of vertices at this latitude.
-                for (int j = 0; j <= horizontalSegments; j++)
+                for (int j = 0; j <= HorizontalSegments; j++)
                 {
-                    float u = (float)j / horizontalSegments;
+                    float u = (float)j / HorizontalSegments;
 
-                    var longitude = (float)(j * 2.0 * Math.PI / horizontalSegments);
+                    var longitude = (float)(j * 2.0 * Math.PI / HorizontalSegments);
                     var dx = (float)Math.Sin(longitude);
                     var dz = (float)Math.Cos(longitude);
 
                     dx *= dxz;
                     dz *= dxz;
 
-                    Vertices[vertexCount++] = new Vertex
+                    Vertices[VertexCount++] = new Vertex
                     {
-                        Position = new SharpDX.Vector3(dx * radius, dy * radius, dz * radius),
+                        Position = new SharpDX.Vector3(dx * Radius, dy * Radius, dz * Radius),
                         TexCoords = new SharpDX.Vector2(u, v),
                         Normal = new SharpDX.Vector3(dx, dy, dz)
                     };
@@ -51,27 +51,27 @@ namespace Generate.Content
             }
 
             // Fill the index buffer with triangles joining each pair of latitude rings.
-            int stride = horizontalSegments + 1;
+            int Stride = HorizontalSegments + 1;
 
-            int indexCount = 0;
-            for (int i = 0; i < verticalSegments; i++)
+            int Index = 0;
+            for (int i = 0; i < VerticalSegments; i++)
             {
-                for (int j = 0; j <= horizontalSegments; j++)
+                for (int j = 0; j <= HorizontalSegments; j++)
                 {
                     int nextI = i + 1;
-                    int nextJ = (j + 1) % stride;
+                    int nextJ = (j + 1) % Stride;
 
-                    Indices[indexCount++] = (i * stride + j);
-                    Indices[indexCount++] = (i * stride + nextJ);
-                    Indices[indexCount++] = (nextI * stride + j);
+                    Indices[Index++] = (i * Stride + j);
+                    Indices[Index++] = (i * Stride + nextJ);
+                    Indices[Index++] = (nextI * Stride + j);
 
-                    Indices[indexCount++] = (i * stride + nextJ);
-                    Indices[indexCount++] = (nextI * stride + nextJ);
-                    Indices[indexCount++] = (nextI * stride + j);
+                    Indices[Index++] = (i * Stride + nextJ);
+                    Indices[Index++] = (nextI * Stride + nextJ);
+                    Indices[Index++] = (nextI * Stride + j);
                 }
             }
 
-            return new Model(new SharpDX.Vector3(5, 0, 0), Vertices, Indices, Seed);
+            return new Model(new SharpDX.Vector3(Seed / int.MaxValue * 10, 0, 0), Vertices, Indices, Seed);
         }
 
         internal static Model Ground(int Seed, float[,] Heights)
@@ -110,7 +110,7 @@ namespace Generate.Content
 
         internal static Model Triangle(int Seed)
         {
-            return new Model(new SharpDX.Vector3(0, -5, 0), new[]
+            return new Model(new SharpDX.Vector3(0, 0, Seed / int.MaxValue * 10), new[]
             {
                 new Vertex
                 {

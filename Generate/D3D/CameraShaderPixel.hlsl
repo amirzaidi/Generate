@@ -1,7 +1,6 @@
 ﻿cbuffer PixelLight
 {
-    float3 LightColor;
-    float UseLight;
+    float4 LightColor;
 };
 
 struct Pixel
@@ -22,11 +21,6 @@ static const float PI = 3.14159265f;
 
 float4 PS(Pixel Input) : SV_Target
 {
-    if (UseLight == 0)
-    {
-        return float4(Input.Position.z, 1, 1, 1);
-    }
-
     float4 TexColor = Texture.Sample(Sampler, Input.TexCoord);
     
     float2 projectTexCoord = float2(
@@ -42,7 +36,7 @@ float4 PS(Pixel Input) : SV_Target
         float depthValue = DepthMapTexture.Sample(Sampler, projectTexCoord).r;
 
         // Calculate the depth of the light.
-        float lightDepthValue = Input.LightViewPosition.z / Input.LightViewPosition.w - 0.0001;
+        float lightDepthValue = Input.LightViewPosition.z / Input.LightViewPosition.w - 0.002;
 
         if (lightDepthValue < depthValue)
         {
@@ -55,5 +49,5 @@ float4 PS(Pixel Input) : SV_Target
         }
     }
     
-    return float4(saturate(saturate(float4(LightColor, 1) * LightIntensity) * TexColor).xyz, 1);
+    return float4(saturate(TexColor * saturate(LightColor * LightIntensity)).xyz, 1);
 }

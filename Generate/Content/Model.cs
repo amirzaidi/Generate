@@ -4,32 +4,47 @@ using SharpDX.Direct3D11;
 using SharpDX.DXGI;
 using Buffer = SharpDX.Direct3D11.Buffer;
 using System;
-using SharpDX.Direct3D;
+using System.Collections.Concurrent;
 
 namespace Generate.Content
 {
     class Model : IDisposable
     {
+        internal static ConcurrentStack<Model> ModelsToLoad = new ConcurrentStack<Model>();
+
         internal Vector3 MoveWorld;
         internal float Rotate = 0;
         internal float Scale = 1;
 
+        private int Seed;
+        private Vertex[] Vertices;
         private int[] Indices;
-        private Buffer VertexBuffer;
+        private VertexBufferBinding VertexBinding;
         private Buffer IndexBuffer;
 
         private Texture2D Texture;
         private ShaderResourceView TextureView;
 
+        private Matrix RotateScale;
+        internal bool Loaded = false;
+
         internal Model(Vector3 MoveWorld, Vertex[] Vertices, int[] Indices, int Seed)
         {
             this.MoveWorld = MoveWorld;
+            this.Seed = Seed;
+            this.Vertices = Vertices;
+            this.Indices = Indices;
 
+            ModelsToLoad.Push(this);
+        }
+
+        internal void Load()
+        {
             // Create the vertex buffer.
-            VertexBuffer = Buffer.Create(Program.Renderer.Device, BindFlags.VertexBuffer, Vertices);
+            var VertexBuffer = Buffer.Create(Program.Renderer.Device, BindFlags.VertexBuffer, Vertices);
+            VertexBinding = new VertexBufferBinding(VertexBuffer, Utilities.SizeOf<Vertex>(), 0);
 
             // Create the index buffer.
-            this.Indices = Indices;
             IndexBuffer = Buffer.Create(Program.Renderer.Device, BindFlags.IndexBuffer, this.Indices);
 
             var Rand = new Random(Seed);
@@ -37,6 +52,7 @@ namespace Generate.Content
 
             // Allocate DataStream to receive the WIC image pixels
             using (var buffer = new DataStream(Size * Size * 4, true, true))
+            using (var buffer2 = new DataStream(Size * Size, true, true))
             {
                 for (int X = 0; X < Size; X++)
                 {
@@ -67,21 +83,36 @@ namespace Generate.Content
             }
 
             TextureView = new ShaderResourceView(Program.Renderer.Device, Texture);
+            RotateScale = Matrix.Scaling(Scale) * Matrix.RotationY(Rotate);
+
+            Loaded = true;
         }
 
         internal void Render(Vector2 MoveChunks)
         {
-            var Move = MoveWorld;
-            Move.X += MoveChunks.X;
-            Move.Z += MoveChunks.Y;
-            
-            Program.Renderer.Shader.UpdateMatrices(Move, Rotate, Scale);
+            if (Loaded)
+            {
+                var Move = MoveWorld;
+                Move.X += MoveChunks.X;
+                Move.Z += MoveChunks.Y;
 
-            Program.Renderer.Device.ImmediateContext.InputAssembler.SetVertexBuffers(0, new VertexBufferBinding(VertexBuffer, Utilities.SizeOf<Vertex>(), 0));
-            Program.Renderer.Device.ImmediateContext.InputAssembler.SetIndexBuffer(IndexBuffer, Format.R32_UInt, 0);
+                var Context = Program.Renderer.Device.ImmediateContext;
+                Program.Renderer.ActiveShader.UpdateWorld(RotateScale * Matrix.Translation(Move));
 
-            Program.Renderer.Device.ImmediateContext.PixelShader.SetShaderResource(0, TextureView);
-            Program.Renderer.Device.ImmediateContext.DrawIndexed(Indices.Length, 0, 0);
+                Context.InputAssembler.SetVertexBuffers(0, VertexBinding);
+                Context.InputAssembler.SetIndexBuffer(IndexBuffer, Format.R32_UInt, 0);
+
+                Context.PixelShader.SetShaderResource(0, TextureView);
+
+                if (IndexBuffer != null)
+                {
+                    Context.DrawIndexed(Indices.Length, 0, 0);
+                }
+                else
+                {
+                    Program.LogLine("Unneeded render..", "Model.Render");
+                }
+            }
         }
 
         public void Dispose()
@@ -89,7 +120,7 @@ namespace Generate.Content
             Utilities.Dispose(ref TextureView);
             Utilities.Dispose(ref Texture);
             Utilities.Dispose(ref IndexBuffer);
-            Utilities.Dispose(ref VertexBuffer);
+            VertexBinding.Buffer?.Dispose();
         }
     }
 }

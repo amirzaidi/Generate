@@ -20,7 +20,15 @@ namespace Generate.D3D
             DepthStencilState = new DepthStencilState(Device, StencilDesc);
             Device.ImmediateContext.OutputMerger.SetDepthStencilState(DepthStencilState, 1);
 
-            DepthStencilView = new DepthStencilView(Device, new Texture2D(Device, BufferDesc(Resolution.Width, Resolution.Height, AA)));
+            DepthStencilView = new DepthStencilView(Device, new Texture2D(Device, BufferDesc(Resolution.Width, Resolution.Height, AA)), new DepthStencilViewDescription
+            {
+                Format = Format.D24_UNorm_S8_UInt,
+                Dimension = (AA.Count > 1 ? DepthStencilViewDimension.Texture2DMultisampled : DepthStencilViewDimension.Texture2D),
+                Texture2D = new DepthStencilViewDescription.Texture2DResource
+                {
+                    MipSlice = 0
+                }
+            });
 
             // Create the rasterizer state from the description we just filled out and set the rasterizer state.
             RasterizerState = new RasterizerState(Device, RasterDesc);
@@ -77,25 +85,14 @@ namespace Generate.D3D
                 Height = Height,
                 MipLevels = 1,
                 ArraySize = 1,
-                Format = Format.D24_UNorm_S8_UInt,
+                Format = Format.R24G8_Typeless,
                 SampleDescription = AA,
                 Usage = ResourceUsage.Default,
-                BindFlags = BindFlags.DepthStencil,
+                BindFlags = BindFlags.DepthStencil | BindFlags.ShaderResource,
                 CpuAccessFlags = CpuAccessFlags.None,
                 OptionFlags = ResourceOptionFlags.None
             };
         }
-
-        // Initialize and set up the depth stencil view.
-        private static DepthStencilViewDescription StencilViewDesc = new DepthStencilViewDescription
-        {
-            Format = Format.D24_UNorm_S8_UInt,
-            Dimension = DepthStencilViewDimension.Texture2DMultisampled,
-            Texture2D = new DepthStencilViewDescription.Texture2DResource
-            {
-                MipSlice = 0
-            }
-        };
 
         // Setup the raster description which will determine how and what polygon will be drawn.
         private static RasterizerStateDescription RasterDesc = new RasterizerStateDescription
@@ -113,6 +110,6 @@ namespace Generate.D3D
         };
 
         internal const float ScreenFar = 512.0f;
-        internal const float ScreenNear = 1f;
+        internal const float ScreenNear = 0.1f;
     }
 }

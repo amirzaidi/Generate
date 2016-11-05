@@ -11,11 +11,15 @@ namespace Generate.Content
         private static int MovedX = 0, MovedZ = 0;
         private const float Size = 64f;
 
+        private const int ChunkCountSide = 3;
+        private const int ChunkCountMaxKey = 2 * ChunkCountSide;
+        private const int ChunkCount = ChunkCountMaxKey + 1;
+
         static Chunk()
         {
-            for (int X = 0; X < 7; X++)
+            for (int X = 0; X < ChunkCount; X++)
             {
-                for (int Z = 0; Z < 7; Z++)
+                for (int Z = 0; Z < ChunkCount; Z++)
                 {
                     Chunks[X, Z] = new Chunk(X, Z);
                 }
@@ -24,11 +28,11 @@ namespace Generate.Content
 
         internal static void RenderVisible()
         {
-            for (int X = 0; X < 7; X++)
+            for (int X = 0; X < ChunkCount; X++)
             {
-                for (int Z = 0; Z < 7; Z++)
+                for (int Z = 0; Z < ChunkCount; Z++)
                 {
-                    Chunks[X, Z].Render(X - 3, Z - 3);
+                    Chunks[X, Z].Render(X - ChunkCountSide, Z - ChunkCountSide);
                 }
             }
         }
@@ -36,25 +40,25 @@ namespace Generate.Content
         internal static void UpX()
         {
             MovedX++;
-            Parallel.For(0, 7, Z =>
+            Parallel.For(0, ChunkCount, Z =>
             {
                 Chunks[0, Z].Dispose();
-                for (int X = 0; X < 6; X++)
+                for (int X = 0; X < ChunkCountMaxKey; X++)
                 {
                     Chunks[X, Z] = Chunks[X + 1, Z];
                 }
 
-                Chunks[6, Z] = new Chunk(6 + MovedX, Z + MovedZ);
+                Chunks[ChunkCount - 1, Z] = new Chunk(ChunkCountMaxKey + MovedX, Z + MovedZ);
             });
         }
 
         internal static void DownX()
         {
             MovedX--;
-            Parallel.For(0, 7, Z =>
+            Parallel.For(0, ChunkCount, Z =>
             {
-                Chunks[6, Z].Dispose();
-                for (int X = 6; X > 0; X--)
+                Chunks[ChunkCountMaxKey, Z].Dispose();
+                for (int X = ChunkCount - 1; X > 0; X--)
                 {
                     Chunks[X, Z] = Chunks[X - 1, Z];
                 }
@@ -66,25 +70,25 @@ namespace Generate.Content
         internal static void UpZ()
         {
             MovedZ++;
-            Parallel.For(0, 7, X =>
+            Parallel.For(0, ChunkCount, X =>
             {
                 Chunks[X, 0].Dispose();
-                for (int Z = 0; Z < 6; Z++)
+                for (int Z = 0; Z < ChunkCountMaxKey; Z++)
                 {
                     Chunks[X, Z] = Chunks[X, Z + 1];
                 }
 
-                Chunks[X, 6] = new Chunk(X + MovedX, 6 + MovedZ);
+                Chunks[X, ChunkCount - 1] = new Chunk(X + MovedX, ChunkCountMaxKey + MovedZ);
             });
         }
 
         internal static void DownZ()
         {
             MovedZ--;
-            Parallel.For(0, 7, X =>
+            Parallel.For(0, ChunkCount, X =>
             {
-                Chunks[X, 6].Dispose();
-                for (int Z = 6; Z > 0; Z--)
+                Chunks[X, ChunkCountMaxKey].Dispose();
+                for (int Z = ChunkCountMaxKey; Z > 0; Z--)
                 {
                     Chunks[X, Z] = Chunks[X, Z - 1];
                 }
@@ -102,48 +106,42 @@ namespace Generate.Content
         }
 
         private ConcurrentBag<Model> Models = new ConcurrentBag<Model>();
-        private bool Loaded = false;
         private Worker Random;
         private float[,] Heights;
+        private Task Init;
 
         internal Chunk(int X, int Z)
         {
-            Task.Run(async delegate
+            Init = Task.Run(() =>
             {
                 Random = new Worker($"{X}.{Z}.chunk");
                 Heights = Constants.GetHeights(X, Z);
 
-                await Task.Delay(50);
                 Models.Add(DefaultModels.Ground(Random.Next(), Heights));
-                await Task.Delay(50);
                 Models.Add(DefaultModels.Sphere(Random.Next()));
-                await Task.Delay(50);
                 Models.Add(DefaultModels.Triangle(Random.Next()));
 
-                Loaded = true;
-                Console.WriteLine($"Created {X}, {Z} at {Heights[0,0]} {Heights[0, 1]} {Heights[1, 0]} {Heights[1, 1]}");
+                Console.WriteLine($"Created {X}, {Z} at {Heights[0, 0]} {Heights[0, 1]} {Heights[1, 0]} {Heights[1, 1]}");
             });
         }
 
-        public void Render(int dX, int dY)
+        public void Render(int dX, int dZ)
         {
-            if (Loaded)
+            foreach (var Model in Models)
             {
-                foreach (var Model in Models)
-                {
-                    Model.Render(new SharpDX.Vector2(dX * Size, dY * Size));
-                }
+                Model.Render(new SharpDX.Vector2(dX * Size, dZ * Size));
             }
         }
 
         public void Dispose()
         {
-            Task.Run(delegate
+            Init.ContinueWith(Result =>
             {
-                Parallel.ForEach(Models, Model =>
+                Model Model;
+                while (Models.TryTake(out Model))
                 {
                     Model.Dispose();
-                });
+                }
             });
         }
     }

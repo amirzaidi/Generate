@@ -64,7 +64,7 @@ namespace Generate
                 }
             }
 
-            return new[] { r, g, b };
+            return new[] { r, g, b, 1f };
         }
     }
 }

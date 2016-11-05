@@ -12,9 +12,7 @@ namespace Generate.D3D
     class Renderer : IDisposable
     {
         internal Device Device;
-        //private SwapChain1 SwapChain;
         private SwapChain SwapChain;
-        //private DeviceDebug Debug;
 
         internal ModeDescription Resolution = new ModeDescription
         {
@@ -22,10 +20,12 @@ namespace Generate.D3D
             Height = 0
         };
 
-        internal static SampleDescription AntiAliasing = new SampleDescription(2, 0);
+        internal const int AACount = 2;
+
+        internal static SampleDescription AntiAliasing = new SampleDescription(AACount, 0);
         internal Texture2D AntiAliasedBackBuffer;
         
-        internal const int ShadowSize = 4096;
+        internal const int ShadowSize = AACount * 1600;
 
         private ShadowShader ShadowShader;
         private Depth ShadowDepth;

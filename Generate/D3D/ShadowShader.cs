@@ -23,7 +23,7 @@ namespace Generate.D3D
         internal ShadowShader(Device Device)
         {
             Context = Device.ImmediateContext;
-            Projection = Matrix.Transpose(Matrix.PerspectiveFovLH((float)(Math.PI / 2.0f), 1, 64f, float.MaxValue));
+            Projection = Matrix.Transpose(Matrix.PerspectiveFovLH((float)(Math.PI / 8.0f), 1, 64f, float.MaxValue));
 
             using (var ByteCode = ShaderBytecode.CompileFromFile("D3D/ShadowShaderVertex.hlsl", "VS", "vs_4_0"))
             {
@@ -54,7 +54,7 @@ namespace Generate.D3D
             base.Prepare();
 
             var Position = Input.Camera.Position;
-            Position.Y = (float)Math.Pow(2, 7);
+            Position.Y = (float)(Math.Pow(2, 8) * Math.Sqrt(Renderer.AACount));
             LightVP = Projection * Matrix.Transpose(Matrix.LookAtLH(Position, Position + new Vector3(0, -1, 0.00001f), Vector3.UnitY));
 
             Context.VertexShader.SetConstantBuffer(0, MatricesBuffer);

@@ -108,8 +108,5 @@ namespace Generate.D3D
             IsScissorEnabled = false,
             SlopeScaledDepthBias = 0.0f
         };
-
-        internal const float ScreenFar = 512.0f;
-        internal const float ScreenNear = 0.1f;
     }
 }

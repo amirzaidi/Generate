@@ -66,6 +66,7 @@ namespace Generate
             Overlay?.Draw($"Coords ({Camera.Position.X}, {Camera.Position.Y}, {Camera.Position.Z})", 10, 10, 500, 20);
             Overlay?.Draw($"Rotation ({Camera.RotationX}, {Camera.RotationY})", 10, 30, 500, 20);
             Overlay?.Draw($"Frames ({FPS}, VSync {VSync})", 10, 50, 500, 20);
+            Overlay?.Draw($"Moved Chunks ({Content.Chunk.MovedX}, {Content.Chunk.MovedZ})", 10, 70, 500, 20);
             Overlay?.End();
 
             Frames++;

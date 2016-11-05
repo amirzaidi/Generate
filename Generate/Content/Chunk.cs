@@ -7,13 +7,13 @@ namespace Generate.Content
 {
     class Chunk : IDisposable
     {
-        private static Chunk[,] Chunks = new Chunk[7, 7];
-        private static int MovedX = 0, MovedZ = 0;
+        internal static int MovedX = 0, MovedZ = 0;
         private const float Size = 64f;
 
         private const int ChunkCountSide = 3;
         private const int ChunkCountMaxKey = 2 * ChunkCountSide;
         private const int ChunkCount = ChunkCountMaxKey + 1;
+        private static Chunk[,] Chunks = new Chunk[ChunkCount, ChunkCount];
 
         static Chunk()
         {

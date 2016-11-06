@@ -1,4 +1,5 @@
 ﻿using Generate.Procedure;
+using SharpDX;
 using System;
 using System.Collections.Concurrent;
 using System.Threading.Tasks;
@@ -7,7 +8,8 @@ namespace Generate.Content
 {
     class Chunk : IDisposable
     {
-        private const float Size = 64f;
+        internal const float Size = 64f;
+
         private ConcurrentBag<Model> Models = new ConcurrentBag<Model>();
         private Worker Random;
         private float[,] Heights;
@@ -28,11 +30,27 @@ namespace Generate.Content
             });
         }
 
-        public void Render(int dX, int dZ)
+        internal void Render(int dX, int dZ)
         {
             foreach (var Model in Models)
             {
-                Model.Render(new SharpDX.Vector2(dX * Size, dZ * Size));
+                Model.Render(new Vector2(dX * Size, dZ * Size));
+            }
+        }
+
+        internal void FixPosition(ref Vector3 Position, float Height)
+        {
+            if (Heights != null)
+            {
+                var ViewpointX = Position.X / Size + 0.5f;
+                var ViewpointZ = Position.Z / Size + 0.5f;
+
+                float TopHeight = (1 - ViewpointX) * Heights[0, 0] + ViewpointX * Heights[1, 0];
+                float BottomHeight = (1 - ViewpointX) * Heights[0, 1] + ViewpointX * Heights[1, 1];
+
+                float MidHeight = (1 - ViewpointZ) * TopHeight + ViewpointZ * BottomHeight;
+
+                Position.Y = MidHeight + Height;
             }
         }
 

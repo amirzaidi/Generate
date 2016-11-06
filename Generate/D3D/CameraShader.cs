@@ -25,13 +25,14 @@ namespace Generate.D3D
         internal struct VertexLightLayout
         {
             internal Matrix LightVP;
-            internal Vector4 LightPosition;
         }
 
         [StructLayout(LayoutKind.Sequential)]
         struct PixelLightLayout
         {
             internal Vector4 LightColor;
+            internal Vector3 LightDirection;
+            internal float Padding;
         }
 
         private MatricesLayout Matrices;
@@ -115,7 +116,8 @@ namespace Generate.D3D
                     Procedure.Constants.Hue,
                     Procedure.Constants.Saturation * 0.75f,
                     Procedure.Constants.Brightness * 0.75f + 0.25f
-                }.ToRGB())
+                }.ToRGB()),
+                LightDirection = -Procedure.Constants.LightDirection
             };
             
             ShadowDepthMapView = new ShaderResourceView(Device, ShadowDepthBackbuffer, new ShaderResourceViewDescription
@@ -133,9 +135,6 @@ namespace Generate.D3D
         internal override void Prepare()
         {
             base.Prepare();
-            
-            VertexLight.LightPosition = new Vector4(Input.Camera.Position, 1);
-            VertexLight.LightPosition.Y = (float)Math.Pow(2, 7);
 
             Context.VertexShader.SetConstantBuffer(0, MatricesBuffer);
             Context.VertexShader.SetConstantBuffer(1, VertexLightBuffer);
@@ -170,10 +169,6 @@ namespace Generate.D3D
         {
             Matrices.World = Matrix.Transpose(World);
             Matrices.CameraWVP = Projection * Input.Camera.View * Matrices.World;
-
-            var Position = Input.Camera.Position;
-            Position.Y = (float)Math.Pow(2, 7);
-            //Matrices.LightWVP = Projection * Matrix.Transpose(Matrix.LookAtLH(Position, Position + new Vector3(0, -1, 0.00001f), Vector3.UnitY)) * Matrix.Transpose(World);
 
             Context.MapSubresource(MatricesBuffer, MapMode.WriteDiscard, MapFlags.None, out BufferStream);
             BufferStream.Write(Matrices);

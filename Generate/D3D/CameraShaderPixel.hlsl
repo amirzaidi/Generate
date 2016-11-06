@@ -1,6 +1,8 @@
 ﻿cbuffer PixelLight
 {
     float4 LightColor;
+    float3 LightDirection;
+    float Padding;
 };
 
 struct Pixel
@@ -9,7 +11,6 @@ struct Pixel
     float2 TexCoord : TEXCOORD0;
     float3 Normal : NORMAL;
     float4 LightViewPosition : TEXCOORD1;
-    float3 LightPos : TEXCOORD2;
 };
 
 Texture2D Texture : register(t0);
@@ -41,7 +42,7 @@ float4 PS(Pixel Input) : SV_Target
         if (lightDepthValue < depthValue)
         {
             // Calculate the amount of light on this pixel.
-            LightIntensity += saturate(dot(Input.Normal, float3(0, 1, 0)) * pow(
+            LightIntensity += saturate(dot(Input.Normal, LightDirection) * pow(
                 cos(Input.LightViewPosition.x / Input.LightViewPosition.w * PI / 2.0f)
                 * cos(Input.LightViewPosition.y / Input.LightViewPosition.w * PI / 2.0f)
             , 2))

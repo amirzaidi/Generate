@@ -12,13 +12,13 @@ struct Vertex
 
 struct Pixel
 {
-    float4 Depth : SV_Position;
+    float4 Position : SV_Position;
 };
 
 Pixel VS(Vertex Input)
 {
     Pixel Output;
-    Output.Depth = mul(float4(Input.Position, 1), LightWVP);
+    Output.Position = mul(float4(Input.Position, 1), LightWVP);
     
     return Output;
 }

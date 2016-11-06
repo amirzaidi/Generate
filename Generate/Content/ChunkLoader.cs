@@ -11,6 +11,14 @@ namespace Generate.Content
         private int ChunkCount;
         private static Chunk[,] Chunks;
 
+        internal Chunk Mid
+        {
+            get
+            {
+                return Chunks[ChunkCountSide, ChunkCountSide];
+            }
+        }
+
         internal ChunkLoader()
         {
             ChunkCountMaxKey = 2 * ChunkCountSide;

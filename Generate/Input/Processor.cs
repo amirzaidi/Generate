@@ -1,23 +1,13 @@
 ﻿using Generate.Content;
-using System.Threading.Tasks;
 using System.Windows.Forms;
 
 namespace Generate.Input
 {
     class Processor
     {
-        public static Task[] Process()
-        {
-            MovementUpdate();
-            ChangeChunkSize();
+        private static bool FixPosition = true;
 
-            return new[]
-            {
-                Task.Factory.StartNew(ConstantsUpdate)
-            };
-        }
-
-        private static void MovementUpdate()
+        public static void Process()
         {
             float Duration;
             if (KeyboardMouse.HasDuration(Keys.W, out Duration))
@@ -31,39 +21,29 @@ namespace Generate.Input
 
             if (KeyboardMouse.HasDuration(Keys.D, out Duration))
                 Camera.MoveRight(Duration * 20);
-
-            if (KeyboardMouse.HasDuration(Keys.ShiftKey, out Duration))
-                Camera.MoveUp(-Duration * 25);
-
-            if (KeyboardMouse.HasDuration(Keys.Space, out Duration))
-                Camera.MoveUp(Duration * 25);
-
-
-            if (Camera.Position.X > 32f)
+            
+            if (Camera.Position.X > Chunk.Size / 2)
             {
-                Camera.Position.X -= 64f;
+                Camera.Position.X -= Chunk.Size;
                 Program.Chunks.UpX();
             }
-            else if (Camera.Position.X < -32f)
+            else if (Camera.Position.X < -Chunk.Size / 2)
             {
-                Camera.Position.X += 64f;
+                Camera.Position.X += Chunk.Size;
                 Program.Chunks.DownX();
             }
             
-            if (Camera.Position.Z > 32f)
+            if (Camera.Position.Z > Chunk.Size / 2)
             {
-                Camera.Position.Z -= 64f;
+                Camera.Position.Z -= Chunk.Size;
                 Program.Chunks.UpZ();
             }
-            else if (Camera.Position.Z < -32f)
+            else if (Camera.Position.Z < -Chunk.Size / 2)
             {
-                Camera.Position.Z += 64f;
+                Camera.Position.Z += Chunk.Size;
                 Program.Chunks.DownZ();
             }
-        }
 
-        private static void ChangeChunkSize()
-        {
             if (KeyboardMouse.Pressed(Keys.F7) > 0 && ChunkLoader.ChunkCountSide > 1)
             {
                 Program.Chunks.Dispose();
@@ -77,15 +57,28 @@ namespace Generate.Input
                 ChunkLoader.ChunkCountSide++;
                 Program.Chunks = new ChunkLoader();
             }
-        }
 
-        private static void ConstantsUpdate()
-        {
             if (KeyboardMouse.Pressed(Keys.Escape) > 0)
                 Program.Close = true;
 
             if (KeyboardMouse.Pressed(Keys.F9) > 0)
                 Program.VSync = 1 - Program.VSync;
+
+            if (KeyboardMouse.Pressed(Keys.F10) > 0)
+                FixPosition = !FixPosition;
+
+            if (FixPosition)
+            {
+                Program.Chunks.Mid.FixPosition(ref Camera.Position, 3f);
+            }
+            else
+            {
+                if (KeyboardMouse.HasDuration(Keys.ShiftKey, out Duration))
+                    Camera.MoveUp(-Duration * 25);
+
+                if (KeyboardMouse.HasDuration(Keys.Space, out Duration))
+                    Camera.MoveUp(Duration * 25);
+            }
         }
     }
 }

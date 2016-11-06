@@ -38,7 +38,7 @@ namespace Generate.D3D
         {
             Context.Rasterizer.State = RasterizerState;
             Context.Rasterizer.SetViewport(0, 0, Resolution.Width, Resolution.Height, 0, 1);
-            Context.ClearDepthStencilView(DepthStencilView, DepthStencilClearFlags.Depth, 1, 0);
+            Context.ClearDepthStencilView(DepthStencilView, DepthStencilClearFlags.Depth | DepthStencilClearFlags.Stencil, 1, 0);
         }
 
         public void Dispose()

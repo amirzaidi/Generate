@@ -20,7 +20,7 @@ namespace Generate.D3D
             Height = 0
         };
 
-        internal const int AACount = 2;
+        internal const int AACount = 4;
 
         internal static SampleDescription AntiAliasing = new SampleDescription(AACount, 0);
         internal Texture2D AntiAliasedBackBuffer;

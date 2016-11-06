@@ -1,4 +1,5 @@
-﻿using SharpDX.Mathematics.Interop;
+﻿using SharpDX;
+using SharpDX.Mathematics.Interop;
 using System;
 
 namespace Generate.Procedure
@@ -14,6 +15,8 @@ namespace Generate.Procedure
         internal static int AvgTexDensity;
         private static float HeightIntensity;
 
+        internal static Vector3 LightDirection;
+
         internal static void Load()
         {
             var Rand = new Worker("constants");
@@ -27,6 +30,9 @@ namespace Generate.Procedure
 
             AvgTexDensity = Rand.Next(1, 6);
             HeightIntensity = (float)Math.Pow(Rand.NextDouble(), 5) * 128f;
+
+            LightDirection = new Vector3((float)Rand.NextDouble() - 0.5f, -0.5f - (float)Rand.NextDouble(), (float)Rand.NextDouble() - 0.5f);
+            LightDirection.Normalize();
         }
 
         internal static float[,] GetHeights(int X, int Z)
@@ -35,13 +41,18 @@ namespace Generate.Procedure
 
             for (int dX = 0; dX < 2; dX++)
             {
-                for (int dY = 0; dY < 2; dY++)
+                for (int dZ = 0; dZ < 2; dZ++)
                 {
-                    Places[dX, dY] = (float)(Math.Sin(X + dX) * Math.Cos(Z + dY) * HeightIntensity) - HeightIntensity;
+                    Places[dX, dZ] = GetHeight(X + dX, Z + dZ);
                 }
             }
 
             return Places;
+        }
+
+        private static float GetHeight(int X, int Z)
+        {
+            return (float)(Math.Sin(X) * Math.Cos(Z) * HeightIntensity) - HeightIntensity;
         }
     }
 }

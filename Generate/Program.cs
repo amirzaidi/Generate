@@ -4,7 +4,6 @@ using Generate.D3D;
 using Generate.Input;
 using Generate.Procedure;
 using System;
-using System.Threading.Tasks;
 
 namespace Generate
 {
@@ -27,7 +26,7 @@ namespace Generate
             
             using (Window = new LoopWindow())
             using (Renderer = new Renderer(Window))
-            using (Overlay = new Overlay(Renderer.Device, Renderer.AntiAliasedBackBuffer))
+            //using (Overlay = new Overlay(Renderer.Device, Renderer.AntiAliasedBackBuffer))
             using (Chunks = new ChunkLoader())
             using (var Loop = Window.Loop())
             {
@@ -47,7 +46,7 @@ namespace Generate
 
         static void Frame()
         {
-            Task.WhenAll(Processor.Process());
+            Processor.Process();
 
             Model ToLoad;
             if (Model.ModelsToLoad.TryPop(out ToLoad))

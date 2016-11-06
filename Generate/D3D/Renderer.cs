@@ -20,12 +20,12 @@ namespace Generate.D3D
             Height = 0
         };
 
-        internal const int AACount = 4;
+        internal const int AACount = 8;
 
         internal static SampleDescription AntiAliasing = new SampleDescription(AACount, 0);
         internal Texture2D AntiAliasedBackBuffer;
         
-        internal const int ShadowSize = AACount * 1600;
+        internal const int ShadowSize = AACount * 1500;
 
         private ShadowShader ShadowShader;
         private Depth ShadowDepth;

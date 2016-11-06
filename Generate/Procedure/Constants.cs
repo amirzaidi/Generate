@@ -15,7 +15,22 @@ namespace Generate.Procedure
         internal static int AvgTexDensity;
         private static float HeightIntensity;
 
-        internal static Vector3 LightDirection;
+        private static System.Diagnostics.Stopwatch RotateWatch = new System.Diagnostics.Stopwatch();
+        private static Vector3 BaseLightDirection;
+        internal static Vector3 LightDirection
+        {
+            get
+            {
+                if (!RotateWatch.IsRunning)
+                {
+                    RotateWatch.Start();
+                }
+
+                Matrix Rotation;
+                Matrix.RotationY(RotateWatch.ElapsedMilliseconds / 1000f, out Rotation);
+                return Vector3.TransformCoordinate(BaseLightDirection, Rotation);
+            }
+        }
 
         internal static void Load()
         {
@@ -31,8 +46,13 @@ namespace Generate.Procedure
             AvgTexDensity = Rand.Next(1, 6);
             HeightIntensity = (float)Math.Pow(Rand.NextDouble(), 5) * 128f;
 
-            LightDirection = new Vector3((float)Rand.NextDouble() - 0.5f, -0.5f - (float)Rand.NextDouble(), (float)Rand.NextDouble() - 0.5f);
-            LightDirection.Normalize();
+            BaseLightDirection = new Vector3(
+                (float)Rand.NextDouble() * 2f - 1f, 
+                -(float)Rand.NextDouble() * 0.5f - 0.5f,
+                (float)Rand.NextDouble() * 2f - 1f
+            );
+
+            BaseLightDirection.Normalize();
         }
 
         internal static float[,] GetHeights(int X, int Z)

@@ -71,7 +71,7 @@ namespace Generate.Content
                 }
             }
 
-            return new Model(new SharpDX.Vector3(Seed / int.MaxValue * 10, 0, 0), Vertices, Indices, Seed);
+            return new Model(new SharpDX.Vector3(Seed / int.MaxValue * 50f, 0, Seed % 50), Vertices, Indices, Seed);
         }
 
         internal static Model Ground(int Seed, float[,] Heights)

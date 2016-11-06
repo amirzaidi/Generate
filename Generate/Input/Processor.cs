@@ -21,7 +21,13 @@ namespace Generate.Input
 
             if (KeyboardMouse.HasDuration(Keys.D, out Duration))
                 Camera.MoveRight(Duration * 20);
-            
+
+            if (KeyboardMouse.HasDuration(Keys.ShiftKey, out Duration) && !FixPosition)
+                Camera.MoveUp(-Duration * 25);
+
+            if (KeyboardMouse.HasDuration(Keys.Space, out Duration) && !FixPosition)
+                Camera.MoveUp(Duration * 25);
+
             if (Camera.Position.X > Chunk.Size / 2)
             {
                 Camera.Position.X -= Chunk.Size;
@@ -70,14 +76,6 @@ namespace Generate.Input
             if (FixPosition)
             {
                 Program.Chunks.Mid.FixPosition(ref Camera.Position, 3f);
-            }
-            else
-            {
-                if (KeyboardMouse.HasDuration(Keys.ShiftKey, out Duration))
-                    Camera.MoveUp(-Duration * 25);
-
-                if (KeyboardMouse.HasDuration(Keys.Space, out Duration))
-                    Camera.MoveUp(Duration * 25);
             }
         }
     }

@@ -45,7 +45,7 @@ namespace Generate.Content
             VertexBinding = new VertexBufferBinding(VertexBuffer, Utilities.SizeOf<Vertex>(), 0);
 
             // Create the index buffer.
-            IndexBuffer = Buffer.Create(Program.Renderer.Device, BindFlags.IndexBuffer, this.Indices);
+            IndexBuffer = Buffer.Create(Program.Renderer.Device, BindFlags.IndexBuffer, Indices);
 
             var Rand = new Random(Seed);
             int Size = (int)Math.Pow(2, Rand.Next(Procedure.Constants.AvgTexDensity - 1, Procedure.Constants.AvgTexDensity + 1));

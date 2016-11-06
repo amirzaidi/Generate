@@ -53,7 +53,7 @@ namespace Generate.D3D
         {
             base.Prepare();
 
-            var Position = Input.Camera.Position - Procedure.Constants.LightDirection * 100f * (float)Math.Sqrt(Renderer.AACount);
+            var Position = new Vector3(Input.Camera.Position.X, 0, Input.Camera.Position.Z) - Procedure.Constants.LightDirection * 100f * (float)Math.Sqrt(Renderer.AACount);
             LightVP = Projection * Matrix.Transpose(Matrix.LookAtLH(Position, Position + Procedure.Constants.LightDirection, Vector3.UnitY));
             
             Context.VertexShader.SetConstantBuffer(0, MatricesBuffer);

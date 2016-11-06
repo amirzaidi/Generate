@@ -116,8 +116,7 @@ namespace Generate.D3D
                     Procedure.Constants.Hue,
                     Procedure.Constants.Saturation * 0.75f,
                     Procedure.Constants.Brightness * 0.75f + 0.25f
-                }.ToRGB()),
-                LightDirection = -Procedure.Constants.LightDirection
+                }.ToRGB())
             };
             
             ShadowDepthMapView = new ShaderResourceView(Device, ShadowDepthBackbuffer, new ShaderResourceViewDescription
@@ -144,7 +143,9 @@ namespace Generate.D3D
             Context.UnmapSubresource(VertexLightBuffer, 0);
 
             Context.PixelShader.SetConstantBuffer(0, PixelLightBuffer);
-            
+
+            PixelLight.LightDirection = -Procedure.Constants.LightDirection;
+
             Context.MapSubresource(PixelLightBuffer, MapMode.WriteDiscard, MapFlags.None, out BufferStream);
             BufferStream.Write(PixelLight);
             Context.UnmapSubresource(PixelLightBuffer, 0);

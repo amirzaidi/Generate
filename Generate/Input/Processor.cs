@@ -1,4 +1,5 @@
-﻿using System.Threading.Tasks;
+﻿using Generate.Content;
+using System.Threading.Tasks;
 using System.Windows.Forms;
 
 namespace Generate.Input
@@ -8,6 +9,7 @@ namespace Generate.Input
         public static Task[] Process()
         {
             MovementUpdate();
+            ChangeChunkSize();
 
             return new[]
             {
@@ -19,40 +21,61 @@ namespace Generate.Input
         {
             float Duration;
             if (KeyboardMouse.HasDuration(Keys.W, out Duration))
-                Camera.MoveForward(Duration * 10);
+                Camera.MoveForward(Duration * 40);
 
             if (KeyboardMouse.HasDuration(Keys.A, out Duration))
-                Camera.MoveRight(-Duration * 8);
+                Camera.MoveRight(-Duration * 20);
 
             if (KeyboardMouse.HasDuration(Keys.S, out Duration))
-                Camera.MoveForward(-Duration * 10);
+                Camera.MoveForward(-Duration * 15);
 
             if (KeyboardMouse.HasDuration(Keys.D, out Duration))
-                Camera.MoveRight(Duration * 8);
+                Camera.MoveRight(Duration * 20);
 
             if (KeyboardMouse.HasDuration(Keys.ShiftKey, out Duration))
-                Camera.MoveForward(Duration * 30);
+                Camera.MoveUp(-Duration * 25);
+
+            if (KeyboardMouse.HasDuration(Keys.Space, out Duration))
+                Camera.MoveUp(Duration * 25);
+
 
             if (Camera.Position.X > 32f)
             {
                 Camera.Position.X -= 64f;
-                Content.Chunk.UpX();
+                Program.Chunks.UpX();
             }
             else if (Camera.Position.X < -32f)
             {
                 Camera.Position.X += 64f;
-                Content.Chunk.DownX();
+                Program.Chunks.DownX();
             }
             
             if (Camera.Position.Z > 32f)
             {
                 Camera.Position.Z -= 64f;
-                Content.Chunk.UpZ();
+                Program.Chunks.UpZ();
             }
             else if (Camera.Position.Z < -32f)
             {
                 Camera.Position.Z += 64f;
-                Content.Chunk.DownZ();
+                Program.Chunks.DownZ();
+            }
+        }
+
+        private static void ChangeChunkSize()
+        {
+            if (KeyboardMouse.Pressed(Keys.F7) > 0 && ChunkLoader.ChunkCountSide > 1)
+            {
+                Program.Chunks.Dispose();
+                ChunkLoader.ChunkCountSide--;
+                Program.Chunks = new ChunkLoader();
+            }
+
+            if (KeyboardMouse.Pressed(Keys.F8) > 0)
+            {
+                Program.Chunks.Dispose();
+                ChunkLoader.ChunkCountSide++;
+                Program.Chunks = new ChunkLoader();
             }
         }
 

@@ -1,4 +1,5 @@
-﻿using Generate.D2D;
+﻿using Generate.Content;
+using Generate.D2D;
 using Generate.D3D;
 using Generate.Input;
 using Generate.Procedure;
@@ -10,6 +11,7 @@ namespace Generate
     class Program
     {
         internal static Renderer Renderer;
+        internal static ChunkLoader Chunks;
         private static LoopWindow Window;
         private static Overlay Overlay;
 
@@ -26,6 +28,7 @@ namespace Generate
             using (Window = new LoopWindow())
             using (Renderer = new Renderer(Window))
             using (Overlay = new Overlay(Renderer.Device, Renderer.AntiAliasedBackBuffer))
+            using (Chunks = new ChunkLoader())
             using (var Loop = Window.Loop())
             {
                 KeyboardMouse.StartCapture();
@@ -46,19 +49,19 @@ namespace Generate
         {
             Task.WhenAll(Processor.Process());
 
-            Content.Model ToLoad;
-            if (Content.Model.ModelsToLoad.TryPop(out ToLoad))
+            Model ToLoad;
+            if (Model.ModelsToLoad.TryPop(out ToLoad))
             {
                 ToLoad.Load();
             }
 
             Renderer.PrepareShadow();
-            Content.Chunk.RenderVisible();
+            Chunks.RenderVisible();
             Renderer.EndShadow();
 
             using (Renderer.PrepareCamera(Constants.BG))
             {
-                Content.Chunk.RenderVisible();
+                Chunks.RenderVisible();
             }
 
             Overlay?.Start();
@@ -66,7 +69,7 @@ namespace Generate
             Overlay?.Draw($"Coords ({Camera.Position.X}, {Camera.Position.Y}, {Camera.Position.Z})", 10, 10, 500, 20);
             Overlay?.Draw($"Rotation ({Camera.RotationX}, {Camera.RotationY})", 10, 30, 500, 20);
             Overlay?.Draw($"Frames ({FPS}, VSync {VSync})", 10, 50, 500, 20);
-            Overlay?.Draw($"Moved Chunks ({Content.Chunk.MovedX}, {Content.Chunk.MovedZ})", 10, 70, 500, 20);
+            Overlay?.Draw($"Moved Chunks ({ChunkLoader.MovedX}, {ChunkLoader.MovedX})", 10, 70, 500, 20);
             Overlay?.End();
 
             Frames++;

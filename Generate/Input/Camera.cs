@@ -37,5 +37,10 @@ namespace Generate.Input
         {
             Position += Vector3.TransformCoordinate(Vector3.UnitX, Rotation) * Amount;
         }
+
+        internal static void MoveUp(float Amount)
+        {
+            Position += new Vector3(0, Amount, 0);
+        }
     }
 }

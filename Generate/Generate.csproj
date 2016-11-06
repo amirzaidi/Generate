@@ -80,6 +80,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Content\Chunk.cs" />
+    <Compile Include="Content\ChunkLoader.cs" />
     <Compile Include="Content\Model.cs" />
     <Compile Include="Content\DefaultModels.cs" />
     <Compile Include="D2D\Overlay.cs" />

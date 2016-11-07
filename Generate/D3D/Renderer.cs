@@ -37,7 +37,17 @@ namespace Generate.D3D
         
         internal Renderer(LoopWindow Window, int AntiAliasingCount)
         {
-            Device.CreateWithSwapChain(DriverType.Hardware, DeviceCreationFlags.BgraSupport | (Program.DebugMode ? DeviceCreationFlags.Debug : DeviceCreationFlags.None), new[] { FeatureLevel.Level_11_0 }, new SwapChainDescription
+            var Levels = new[]
+            {
+                FeatureLevel.Level_11_0,
+                FeatureLevel.Level_10_1,
+                FeatureLevel.Level_10_0,
+                FeatureLevel.Level_9_3,
+                FeatureLevel.Level_9_2,
+                FeatureLevel.Level_9_1,
+            };
+
+            Device.CreateWithSwapChain(DriverType.Hardware, DeviceCreationFlags.BgraSupport | (Program.DebugMode ? DeviceCreationFlags.Debug : DeviceCreationFlags.None), Levels, new SwapChainDescription
             {
                 BufferCount = 2,
                 Flags = SwapChainFlags.AllowModeSwitch,

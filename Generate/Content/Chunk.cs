@@ -42,6 +42,8 @@ namespace Generate.Content
         {
             if (Heights != null)
             {
+                // ToDo: Fix separate triangle positioning
+
                 var ViewpointX = Position.X / Size + 0.5f;
                 var ViewpointZ = Position.Z / Size + 0.5f;
 

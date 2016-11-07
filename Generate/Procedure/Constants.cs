@@ -16,6 +16,8 @@ namespace Generate.Procedure
         private static float HeightIntensity;
 
         internal static Vector3 BaseLightDirection;
+        private static double SinCosMove;
+        private static double SinCosScale;
 
         internal static void Load()
         {
@@ -38,6 +40,9 @@ namespace Generate.Procedure
             );
 
             BaseLightDirection.Normalize();
+
+            SinCosMove = Rand.NextDouble() * 10f;
+            SinCosScale = Rand.NextDouble() * 10f;
         }
 
         internal static float[,] GetHeights(int X, int Z)
@@ -57,7 +62,7 @@ namespace Generate.Procedure
 
         private static float GetHeight(int X, int Z)
         {
-            return (float)(Math.Sin(X) * Math.Cos(Z) * HeightIntensity) - HeightIntensity;
+            return (float)(Math.Sin(X * SinCosScale + SinCosMove) * Math.Cos(Z * SinCosScale + SinCosMove) * HeightIntensity) - HeightIntensity;
         }
     }
 }

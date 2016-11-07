@@ -13,20 +13,20 @@ namespace Generate.D3D
     {
         internal Device Device;
         private SwapChain SwapChain;
+        private DeviceDebug Debug;
 
+        internal const Format FormatRGB = Format.R8G8B8A8_UNorm;
         internal ModeDescription Resolution = new ModeDescription
         {
             Width = 0,
             Height = 0
         };
 
-        internal const int AACount = 8;
+        internal static SampleDescription AntiAliasing;
+        internal static int ShadowSize;
 
-        internal static SampleDescription AntiAliasing = new SampleDescription(AACount, 0);
         internal Texture2D AntiAliasedBackBuffer;
         
-        internal const int ShadowSize = AACount * 1500;
-
         private ShadowShader ShadowShader;
         private Depth ShadowDepth;
 
@@ -35,18 +35,16 @@ namespace Generate.D3D
 
         internal IShader ActiveShader;
         
-        internal Renderer(LoopWindow Window)
+        internal Renderer(LoopWindow Window, int AntiAliasingCount)
         {
-            Device.CreateWithSwapChain(DriverType.Hardware, /*DeviceCreationFlags.Debug |*/ DeviceCreationFlags.BgraSupport, new SwapChainDescription
+            Device.CreateWithSwapChain(DriverType.Hardware, DeviceCreationFlags.BgraSupport | (Program.DebugMode ? DeviceCreationFlags.Debug : DeviceCreationFlags.None), new[] { FeatureLevel.Level_11_0 }, new SwapChainDescription
             {
                 BufferCount = 2,
                 Flags = SwapChainFlags.AllowModeSwitch,
                 IsWindowed = true,
                 ModeDescription = new ModeDescription
                 {
-                    Format = Format.R8G8B8A8_UNorm,
-                    Height = 768,
-                    Width = 1024
+                    Format = FormatRGB
                 },
                 OutputHandle = Window.Handle,
                 SampleDescription = new SampleDescription(1, 0),
@@ -54,11 +52,14 @@ namespace Generate.D3D
                 Usage = Usage.RenderTargetOutput
             }, out Device, out SwapChain);
 
+            AntiAliasing = new SampleDescription(AntiAliasingCount, 0);
+            ShadowSize = AntiAliasingCount * 1536;
+            
             using (var Factory = SwapChain.GetParent<Factory>())
             {
                 foreach (var Output in Factory.Adapters.First().Outputs)
                 {
-                    foreach (var PossibleResolution in Output.GetDisplayModeList(Format.R8G8B8A8_UNorm, 0))
+                    foreach (var PossibleResolution in Output.GetDisplayModeList(FormatRGB, 0))
                     {
                         if (PossibleResolution.Scaling == DisplayModeScaling.Unspecified && PossibleResolution.Width >= Resolution.Width && PossibleResolution.Height >= Resolution.Height)
                         {
@@ -93,7 +94,11 @@ namespace Generate.D3D
             CameraDepth = new Depth(Device, Resolution, AntiAliasing);
 
             Device.ImmediateContext.InputAssembler.PrimitiveTopology = PrimitiveTopology.TriangleList;
-            //Debug = new DeviceDebug(Device);
+
+            if (Program.DebugMode)
+            {
+                Debug = new DeviceDebug(Device);
+            }
         }
 
         private void ResizeBuffers()
@@ -135,7 +140,7 @@ namespace Generate.D3D
         {
             using (var BackBuffer = SwapChain.GetBackBuffer<Texture2D>(0))
             {
-                Device.ImmediateContext.ResolveSubresource(AntiAliasedBackBuffer, 0, BackBuffer, 0, Format.R8G8B8A8_UNorm);
+                Device.ImmediateContext.ResolveSubresource(AntiAliasedBackBuffer, 0, BackBuffer, 0, FormatRGB);
             }
 
             if ((VSync == 0) != SwapChain.IsFullScreen)
@@ -163,9 +168,8 @@ namespace Generate.D3D
             Utilities.Dispose(ref Device);
             Utilities.Dispose(ref SwapChain);
 
-            //Debug.ReportLiveDeviceObjects(ReportingLevel.Detail | ReportingLevel.IgnoreInternal);
-
-            //Utilities.Dispose(ref Debug);
+            Debug?.ReportLiveDeviceObjects(ReportingLevel.Detail | ReportingLevel.IgnoreInternal);
+            Utilities.Dispose(ref Debug);
         }
     }
 }

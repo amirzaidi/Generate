@@ -17,15 +17,15 @@ namespace Generate.Content
         internal float Scale = 1;
 
         private int Seed;
-        private Vertex[] Vertices;
-        private int[] Indices;
+        protected Vertex[] Vertices;
+        protected int[] Indices;
         private VertexBufferBinding VertexBinding;
         private Buffer IndexBuffer;
 
-        private Texture2D Texture;
+        protected Texture2D Texture;
         private ShaderResourceView TextureView;
 
-        private Matrix RotateScale;
+        protected Matrix RotateScale;
         internal bool Loaded = false;
 
         internal Model(Vector3 MoveWorld, Vertex[] Vertices, int[] Indices, int Seed)
@@ -47,12 +47,21 @@ namespace Generate.Content
             // Create the index buffer.
             IndexBuffer = Buffer.Create(Program.Renderer.Device, BindFlags.IndexBuffer, Indices);
 
+            LoadTexture();
+
+            TextureView = new ShaderResourceView(Program.Renderer.Device, Texture);
+            RotateScale = Matrix.Scaling(Scale) * Matrix.RotationY(Rotate);
+
+            Loaded = true;
+        }
+
+        protected virtual void LoadTexture()
+        {
             var Rand = new Random(Seed);
             int Size = (int)Math.Pow(2, Rand.Next(Procedure.Constants.AvgTexDensity - 1, Procedure.Constants.AvgTexDensity + 1));
 
             // Allocate DataStream to receive the WIC image pixels
             using (var buffer = new DataStream(Size * Size * 4, true, true))
-            using (var buffer2 = new DataStream(Size * Size, true, true))
             {
                 for (int X = 0; X < Size; X++)
                 {
@@ -75,18 +84,16 @@ namespace Generate.Content
                     BindFlags = BindFlags.ShaderResource,
                     Usage = ResourceUsage.Immutable,
                     CpuAccessFlags = CpuAccessFlags.None,
-                    Format = Format.R8G8B8A8_UNorm,
+                    Format = Renderer.FormatRGB,
                     MipLevels = 1,
                     OptionFlags = ResourceOptionFlags.None,
                     SampleDescription = new SampleDescription(1, 0),
                 }, new DataRectangle(buffer.DataPointer, Size * 4));
             }
-
-            TextureView = new ShaderResourceView(Program.Renderer.Device, Texture);
-            RotateScale = Matrix.Scaling(Scale) * Matrix.RotationY(Rotate);
-
-            Loaded = true;
         }
+
+        internal void Render()
+            => Render(Vector2.Zero);
 
         internal void Render(Vector2 MoveChunks)
         {

@@ -12,7 +12,7 @@ namespace Generate.D2D
         private TextFormat TextFormat;
         internal DeviceContext Context2D;
         private SolidColorBrush Brush;
-        private static BitmapProperties1 Properties = new BitmapProperties1(new PixelFormat(Format.R8G8B8A8_UNorm, AlphaMode.Premultiplied), 96, 96, BitmapOptions.Target | BitmapOptions.CannotDraw);
+        private static BitmapProperties1 Properties = new BitmapProperties1(new PixelFormat(D3D.Renderer.FormatRGB, AlphaMode.Premultiplied), 96, 96, BitmapOptions.Target | BitmapOptions.CannotDraw);
 
         internal Overlay(SharpDX.Direct3D11.Device Device3D, Texture2D BackBuffer)
         {

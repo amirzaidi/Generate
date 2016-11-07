@@ -16,18 +16,28 @@ namespace Generate
 
         internal static bool Close = false;
         internal static int VSync = 1;
+        internal static bool DebugMode;
         private static uint Frames = 0;
 
         static void Main(string[] args)
         {
             Log("Seed? ");
             Worker.Master = new Master(Console.ReadLine().AsciiBytes());
+
+            Log("Debug Mode? Press enter for no: ");
+            DebugMode = Console.ReadLine().Length > 0;
+
+            Log("Anti Aliasing? Press enter if unsure: ");
+            var Read = Console.ReadLine();
+            var AA = Read == string.Empty ? 1 : int.Parse(Read);
+
             Constants.Load();
             
             using (Window = new LoopWindow())
-            using (Renderer = new Renderer(Window))
+            using (Renderer = new Renderer(Window, AA))
             using (Overlay = new Overlay(Renderer.Device, Renderer.AntiAliasedBackBuffer))
             using (Chunks = new ChunkLoader())
+            using (Sun.Main = new Sun())
             using (var Loop = Window.Loop())
             {
                 KeyboardMouse.StartCapture();
@@ -54,6 +64,8 @@ namespace Generate
                 ToLoad.Load();
             }
 
+            Sun.Main.Tick();
+
             Renderer.PrepareShadow();
             Chunks.RenderVisible();
             Renderer.EndShadow();
@@ -61,6 +73,9 @@ namespace Generate
             using (Renderer.PrepareCamera(Constants.BG))
             {
                 Chunks.RenderVisible();
+
+                ((CameraShader)Renderer.ActiveShader).DisableLighting();
+                Sun.Main.Render();
             }
 
             Overlay?.Start();

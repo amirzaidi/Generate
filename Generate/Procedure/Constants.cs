@@ -15,22 +15,7 @@ namespace Generate.Procedure
         internal static int AvgTexDensity;
         private static float HeightIntensity;
 
-        private static System.Diagnostics.Stopwatch RotateWatch = new System.Diagnostics.Stopwatch();
-        private static Vector3 BaseLightDirection;
-        internal static Vector3 LightDirection
-        {
-            get
-            {
-                if (!RotateWatch.IsRunning)
-                {
-                    RotateWatch.Start();
-                }
-
-                Matrix Rotation;
-                Matrix.RotationY(RotateWatch.ElapsedMilliseconds / 1000f, out Rotation);
-                return Vector3.TransformCoordinate(BaseLightDirection, Rotation);
-            }
-        }
+        internal static Vector3 BaseLightDirection;
 
         internal static void Load()
         {

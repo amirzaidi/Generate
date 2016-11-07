@@ -5,6 +5,7 @@ using Buffer = SharpDX.Direct3D11.Buffer;
 using System;
 using System.Runtime.InteropServices;
 using SharpDX;
+using Generate.Content;
 
 namespace Generate.D3D
 {
@@ -52,9 +53,8 @@ namespace Generate.D3D
         internal override void Prepare()
         {
             base.Prepare();
-
-            var Position = new Vector3(Input.Camera.Position.X, 0, Input.Camera.Position.Z) - Procedure.Constants.LightDirection * 100f * (float)Math.Sqrt(Renderer.AACount);
-            LightVP = Projection * Matrix.Transpose(Matrix.LookAtLH(Position, Position + Procedure.Constants.LightDirection, Vector3.UnitY));
+            
+            LightVP = Projection * Matrix.Transpose(Matrix.LookAtLH(Sun.Main.MoveWorld, Sun.Main.MoveWorld + Sun.Main.LightDirection, Vector3.UnitY));
             
             Context.VertexShader.SetConstantBuffer(0, MatricesBuffer);
         }

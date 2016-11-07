@@ -32,7 +32,7 @@ namespace Generate.D3D
         {
             internal Vector4 LightColor;
             internal Vector3 LightDirection;
-            internal float Padding;
+            internal float StartLight;
         }
 
         private MatricesLayout Matrices;
@@ -144,7 +144,8 @@ namespace Generate.D3D
 
             Context.PixelShader.SetConstantBuffer(0, PixelLightBuffer);
 
-            PixelLight.LightDirection = -Procedure.Constants.LightDirection;
+            PixelLight.LightDirection = -Content.Sun.Main.LightDirection;
+            PixelLight.StartLight = 0.05f;
 
             Context.MapSubresource(PixelLightBuffer, MapMode.WriteDiscard, MapFlags.None, out BufferStream);
             BufferStream.Write(PixelLight);
@@ -155,15 +156,14 @@ namespace Generate.D3D
 
             Context.InputAssembler.InputLayout = InputLayout;
         }
-        
-        internal override void End()
-        {
-            Context.VertexShader.SetConstantBuffer(0, null);
-            Context.VertexShader.SetConstantBuffer(1, null);
 
-            Context.PixelShader.SetConstantBuffer(0, null);
-            Context.PixelShader.SetSampler(0, null);
-            Context.PixelShader.SetShaderResource(1, null);
+        internal void DisableLighting()
+        {
+            PixelLight.StartLight = 1f;
+
+            Context.MapSubresource(PixelLightBuffer, MapMode.WriteDiscard, MapFlags.None, out BufferStream);
+            BufferStream.Write(PixelLight);
+            Context.UnmapSubresource(PixelLightBuffer, 0);
         }
 
         internal override void UpdateWorld(Matrix World)
@@ -174,6 +174,16 @@ namespace Generate.D3D
             Context.MapSubresource(MatricesBuffer, MapMode.WriteDiscard, MapFlags.None, out BufferStream);
             BufferStream.Write(Matrices);
             Context.UnmapSubresource(MatricesBuffer, 0);
+        }
+
+        internal override void End()
+        {
+            Context.VertexShader.SetConstantBuffer(0, null);
+            Context.VertexShader.SetConstantBuffer(1, null);
+
+            Context.PixelShader.SetConstantBuffer(0, null);
+            Context.PixelShader.SetSampler(0, null);
+            Context.PixelShader.SetShaderResource(1, null);
         }
 
         public override void Dispose()

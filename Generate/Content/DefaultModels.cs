@@ -101,7 +101,8 @@ namespace Generate.Content
             };
 
             // ToDo: Fix Ground Triangle Warp
-            Vertex.CalcSurfaceNormal(ref Vertices);
+            Vertex.CalcSurfaceNormal(ref Vertices, 0, 3);
+            Vertex.CalcSurfaceNormal(ref Vertices, 1, 4);
 
             return new Model(new SharpDX.Vector3(0, -5, 0), Vertices, new[]
             {

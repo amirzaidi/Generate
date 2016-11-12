@@ -70,7 +70,7 @@ namespace Generate
             Chunks.RenderVisible();
             Renderer.EndShadow();
 
-            using (Renderer.PrepareCamera(Constants.BG))
+            using (Renderer.PrepareCamera(Constants.Background))
             {
                 Chunks.RenderVisible();
 

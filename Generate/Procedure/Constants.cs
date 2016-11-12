@@ -1,48 +1,67 @@
 ﻿using SharpDX;
 using SharpDX.Mathematics.Interop;
 using System;
+using System.Linq;
 
 namespace Generate.Procedure
 {
     static class Constants
     {
-        internal static float Hue;
-        internal static float Saturation;
-        internal static float Brightness;
+        internal static RawColor4 Color;
+        internal static RawColor4 Background;
+        internal static Vector4 Light;
 
-        internal static RawColor4 BG;
-
-        internal static int AvgTexDensity;
+        internal static int TextureDensityPower;
+        internal static int TextureDensity;
         private static float HeightIntensity;
 
         internal static Vector3 BaseLightDirection;
         private static double SinCosMove;
         private static double SinCosScale;
 
+        internal static float StripeStart;
+        internal static float StripeMultiplyFactor;
+
+        internal static float DirtSmoothness;
+
         internal static void Load()
         {
             var Rand = new Worker("constants");
 
-            Hue = (float)Rand.NextDouble();
-            Saturation = (float)Rand.NextDouble();
-            Brightness = (float)(Rand.NextDouble() / 2f + 0.5f);
+            var Hue = Rand.NextFloat();
+            var Saturation = Rand.NextFloat();
+            var Brightness = Rand.NextFloat();
 
-            var BGFloat = new[] { Hue, Saturation, Brightness }.ToRGB();
-            BG = new RawColor4(BGFloat[0], BGFloat[1], BGFloat[2], 1);
+            var Float = new[] { Hue, Saturation, Brightness }.ToRGB();
+            Color = new RawColor4(Float[0], Float[1], Float[2], 1);
 
-            AvgTexDensity = Rand.Next(1, 6);
+            Float = new[] { Hue, Saturation, Brightness / 2f + 0.5f }.ToRGB();
+            Background = new RawColor4(Float[0], Float[1], Float[2], 1);
+
+            Float = new[] { Hue, Saturation * 0.25f, Brightness * 0.5f + 0.5f }.ToRGB();
+            Light = new Vector4(Float[0], Float[1], Float[2], 1);
+
+            TextureDensityPower = Rand.Next(3, 8);
+            TextureDensity = (int)Math.Pow(2, TextureDensityPower);
             HeightIntensity = (float)Math.Pow(Rand.NextDouble(), 5) * 128f;
 
             BaseLightDirection = new Vector3(
-                (float)Rand.NextDouble() * 2f - 1f, 
-                -(float)Rand.NextDouble() * 0.5f - 0.5f,
-                (float)Rand.NextDouble() * 2f - 1f
+                Rand.NextFloat(-1f, 1f),
+                Rand.NextFloat(-1f, -0.5f),
+                Rand.NextFloat(-1f, 1f)
             );
 
             BaseLightDirection.Normalize();
 
-            SinCosMove = Rand.NextDouble() * 10f;
-            SinCosScale = Rand.NextDouble() * 10f;
+            SinCosMove = Rand.NextDouble() * 15000f;
+            SinCosScale = Rand.NextDouble() * 10000f;
+
+            Texture.Handlers = Texture.Handlers.Where(x => Rand.Next(0, 2) == 1).ToArray();
+
+            StripeStart = Rand.NextFloat(0.5f, 1f);
+            StripeMultiplyFactor = 0.5f - StripeStart * 0.5f;
+
+            DirtSmoothness = Rand.NextFloat(0.5f, 1f);
         }
 
         internal static float[,] GetHeights(int X, int Z)
@@ -62,7 +81,7 @@ namespace Generate.Procedure
 
         private static float GetHeight(int X, int Z)
         {
-            return (float)(Math.Sin(X * SinCosScale + SinCosMove) * Math.Cos(Z * SinCosScale + SinCosMove) * HeightIntensity) - HeightIntensity;
+            return (float)((Math.Sin(X * SinCosScale + SinCosMove) - 0.5f) * (Math.Cos(Math.Pow(Z, 3) * SinCosScale + SinCosMove) + 0.5f) * HeightIntensity) - HeightIntensity;
         }
     }
 }

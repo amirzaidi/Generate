@@ -111,12 +111,7 @@ namespace Generate.D3D
 
             PixelLight = new PixelLightLayout
             {
-                LightColor = new Vector4(new[]
-                {
-                    Procedure.Constants.Hue,
-                    Procedure.Constants.Saturation * 0.75f,
-                    Procedure.Constants.Brightness * 0.75f + 0.25f
-                }.ToRGB())
+                LightColor = Procedure.Constants.Light
             };
             
             ShadowDepthMapView = new ShaderResourceView(Device, ShadowDepthBackbuffer, new ShaderResourceViewDescription
@@ -145,7 +140,7 @@ namespace Generate.D3D
             Context.PixelShader.SetConstantBuffer(0, PixelLightBuffer);
 
             PixelLight.LightDirection = -Content.Sun.Main.LightDirection;
-            PixelLight.StartLight = 0.05f;
+            PixelLight.StartLight = 0.15f;
 
             Context.MapSubresource(PixelLightBuffer, MapMode.WriteDiscard, MapFlags.None, out BufferStream);
             BufferStream.Write(PixelLight);

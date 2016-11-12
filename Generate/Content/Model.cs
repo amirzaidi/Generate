@@ -5,6 +5,8 @@ using SharpDX.DXGI;
 using Buffer = SharpDX.Direct3D11.Buffer;
 using System;
 using System.Collections.Concurrent;
+using Generate.Procedure;
+using System.Threading.Tasks;
 
 namespace Generate.Content
 {
@@ -26,7 +28,6 @@ namespace Generate.Content
         private ShaderResourceView TextureView;
 
         protected Matrix RotateScale;
-        internal bool Loaded = false;
 
         internal Model(Vector3 MoveWorld, Vertex[] Vertices, int[] Indices, int Seed)
         {
@@ -49,37 +50,63 @@ namespace Generate.Content
 
             LoadTexture();
 
-            TextureView = new ShaderResourceView(Program.Renderer.Device, Texture);
             RotateScale = Matrix.Scaling(Scale) * Matrix.RotationY(Rotate);
-
-            Loaded = true;
+            TextureView = new ShaderResourceView(Program.Renderer.Device, Texture);
         }
 
         protected virtual void LoadTexture()
         {
-            var Rand = new Random(Seed);
-            int Size = (int)Math.Pow(2, Rand.Next(Procedure.Constants.AvgTexDensity - 1, Procedure.Constants.AvgTexDensity + 1));
+            var Colors = new float[Constants.TextureDensity, Constants.TextureDensity, 3];
+
+            for (int X = 0; X < Colors.GetLength(0); X++)
+            {
+                for (int Y = 0; Y < Colors.GetLength(1); Y++)
+                {
+                    for (int C = 0; C < Colors.GetLength(2); C++)
+                    {
+                        Colors[X, Y, C] = 1f;
+                    }
+                }
+            }
+
+            var Random = new Random(Seed);
+            for (int i = 0; i < Procedure.Texture.Handlers.Length; i++)
+            {
+                Procedure.Texture.Handlers[i](Colors, Random);
+            }
 
             // Allocate DataStream to receive the WIC image pixels
-            using (var buffer = new DataStream(Size * Size * 4, true, true))
+            using (var Buffer = new DataStream(Constants.TextureDensity * Constants.TextureDensity * 4, true, true))
             {
-                for (int X = 0; X < Size; X++)
+                for (int X = 0; X < Colors.GetLength(0); X++)
                 {
-                    for (int Y = 0; Y < Size; Y++)
+                    for (int Y = 0; Y < Colors.GetLength(1); Y++)
                     {
-                        buffer.WriteByte((byte)Rand.Next(0, 256));
-                        buffer.WriteByte((byte)Rand.Next(0, 256));
-                        buffer.WriteByte((byte)Rand.Next(0, 256));
-
-                        buffer.WriteByte(byte.MaxValue);
+                        for (int C = 0; C < Colors.GetLength(2); C++)
+                        {
+                            if (Colors[X, Y, C] > 1f)
+                            {
+                                Buffer.WriteByte(byte.MaxValue);
+                            }
+                            else if (Colors[X, Y, C] < 0f)
+                            {
+                                Buffer.WriteByte(0);
+                            }
+                            else
+                            {
+                                Buffer.WriteByte((byte)Math.Round(Colors[X, Y, C] * byte.MaxValue));
+                            }
+                        }
+                        
+                        Buffer.WriteByte(byte.MaxValue); //Alpha
                     }
                 }
 
                 // Copy the content of the WIC to the buffer
                 Texture = new Texture2D(Program.Renderer.Device, new Texture2DDescription
                 {
-                    Width = Size,
-                    Height = Size,
+                    Width = Constants.TextureDensity,
+                    Height = Constants.TextureDensity,
                     ArraySize = 1,
                     BindFlags = BindFlags.ShaderResource,
                     Usage = ResourceUsage.Immutable,
@@ -88,7 +115,7 @@ namespace Generate.Content
                     MipLevels = 1,
                     OptionFlags = ResourceOptionFlags.None,
                     SampleDescription = new SampleDescription(1, 0),
-                }, new DataRectangle(buffer.DataPointer, Size * 4));
+                }, new DataRectangle(Buffer.DataPointer, Constants.TextureDensity * 4));
             }
         }
 
@@ -97,7 +124,7 @@ namespace Generate.Content
 
         internal void Render(Vector2 MoveChunks)
         {
-            if (Loaded)
+            if (TextureView != null)
             {
                 var Move = MoveWorld;
                 Move.X += MoveChunks.X;
@@ -110,15 +137,7 @@ namespace Generate.Content
                 Context.InputAssembler.SetIndexBuffer(IndexBuffer, Format.R32_UInt, 0);
 
                 Context.PixelShader.SetShaderResource(0, TextureView);
-
-                if (IndexBuffer != null)
-                {
-                    Context.DrawIndexed(Indices.Length, 0, 0);
-                }
-                else
-                {
-                    Program.LogLine("Unneeded render..", "Model.Render");
-                }
+                Context.DrawIndexed(Indices.Length, 0, 0);
             }
         }
 

@@ -97,6 +97,7 @@
     <Compile Include="Input\Processor.cs" />
     <Compile Include="Procedure\Constants.cs" />
     <Compile Include="Procedure\Master.cs" />
+    <Compile Include="Procedure\Texture.cs" />
     <Compile Include="Procedure\Worker.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />

@@ -58,7 +58,8 @@ namespace Generate.D3D
                 },
                 OutputHandle = Window.Handle,
                 SampleDescription = new SampleDescription(1, 0),
-                SwapEffect = SwapEffect.FlipDiscard,
+                //SwapEffect = SwapEffect.FlipDiscard,
+                SwapEffect = SwapEffect.Discard,
                 Usage = Usage.RenderTargetOutput
             }, out Device, out SwapChain);
 

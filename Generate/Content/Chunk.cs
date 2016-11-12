@@ -44,13 +44,36 @@ namespace Generate.Content
             {
                 // ToDo: Fix separate triangle positioning
 
-                var ViewpointX = Position.X / Size + 0.5f;
-                var ViewpointZ = Position.Z / Size + 0.5f;
+                var DistanceLeft = Position.X / Size + 0.5f;
+                var DistanceBottom = Position.Z / Size + 0.5f;
 
-                float TopHeight = (1 - ViewpointX) * Heights[0, 0] + ViewpointX * Heights[1, 0];
-                float BottomHeight = (1 - ViewpointX) * Heights[0, 1] + ViewpointX * Heights[1, 1];
+                Console.WriteLine(DistanceBottom);
 
-                float MidHeight = (1 - ViewpointZ) * TopHeight + ViewpointZ * BottomHeight;
+                float MidHeight;
+
+                //+X,0 = right
+                //0,+Z = down
+
+                Console.WriteLine(DistanceLeft + " " + DistanceBottom);
+
+                if (DistanceLeft < DistanceBottom)
+                {
+                    //Top Left
+
+                    float TopHeight = (1 - DistanceLeft) * Heights[0, 0] + DistanceLeft * Heights[1, 0];
+                    float BottomHeight = (1 - DistanceLeft) * Heights[0, 1] + DistanceLeft * Heights[1, 1];
+
+                    MidHeight = (1 - DistanceBottom) * TopHeight + DistanceBottom * BottomHeight;
+                }
+                else
+                {
+                    //Bottom Right
+
+                    float TopHeight = (1 - DistanceLeft) * Heights[0, 0] + DistanceLeft * Heights[1, 0];
+                    float BottomHeight = (1 - DistanceLeft) * Heights[0, 1] + DistanceLeft * Heights[1, 1];
+
+                    MidHeight = (1 - DistanceBottom) * TopHeight + DistanceBottom * BottomHeight;
+                }
 
                 Position.Y = MidHeight + Height;
             }

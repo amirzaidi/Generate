@@ -43,7 +43,7 @@ float4 PS(Pixel Input) : SV_Target
         float depthValue = DepthMapTexture.Sample(Sampler, LightProjectedCoords).r;
 
         // Calculate the depth of the light.
-        float lightDepthValue = Input.LightViewPosition.z / Input.LightViewPosition.w - 0.005;
+        float lightDepthValue = Input.LightViewPosition.z / Input.LightViewPosition.w - 0.0025;
 
         if (lightDepthValue < depthValue)
         {

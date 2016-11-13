@@ -2,7 +2,6 @@
 using SharpDX.Direct3D11;
 using Device = SharpDX.Direct3D11.Device;
 using Buffer = SharpDX.Direct3D11.Buffer;
-using System;
 using System.Runtime.InteropServices;
 using SharpDX;
 using Generate.Content;
@@ -24,7 +23,7 @@ namespace Generate.D3D
         internal ShadowShader(Device Device)
         {
             Context = Device.ImmediateContext;
-            Projection = Matrix.Transpose(Matrix.OrthoLH(256f, 256f, 1f, 2048f));
+            Projection = Matrix.Transpose(Matrix.OrthoLH(256f, 256f, 128f, 3072f));
             
             using (var ByteCode = ShaderBytecode.CompileFromFile("D3D/ShadowShaderVertex.hlsl", "VS", "vs_4_0"))
             {

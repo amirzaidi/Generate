@@ -16,7 +16,7 @@ namespace Generate.Content
 
         internal Sun() : base(Vector3.Zero, null, null, 0)
         {
-            Scale = 500f * (float)Math.Sqrt(Renderer.AntiAliasing.Count);
+            Scale = 500f * (float)Math.Pow(Renderer.AntiAliasing.Count, 0.3);
 
             int Tesselation = 8 * Renderer.AntiAliasing.Count;
             float Diameter = 4.0f;
@@ -121,7 +121,6 @@ namespace Generate.Content
             LightDirection = Vector3.TransformCoordinate(Procedure.Constants.BaseLightDirection, Rotation);
 
             MoveWorld = new Vector3(Input.Camera.Position.X, 0, Input.Camera.Position.Z) - LightDirection * Scale;
-
             RotateScale = Matrix.Scaling(50f);
         }
     }

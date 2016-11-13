@@ -60,8 +60,8 @@ namespace Generate.Procedure
 
             Texture.Handlers = Texture.Handlers.Where(x => Rand.Next(0, 2) == 1).ToArray();
 
-            StripeStart = Rand.NextFloat(0.5f, 1f);
-            StripeMultiplyFactor = 0.5f - StripeStart * 0.5f;
+            StripeStart = Rand.NextFloat(0.4f, 1f);
+            StripeMultiplyFactor = 1f - StripeStart;
 
             DirtSmoothness = Rand.NextFloat(0.5f, 1f);
             RandomColor = Rand.Next(0, 2) == 1;

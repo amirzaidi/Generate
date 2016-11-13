@@ -16,13 +16,14 @@ namespace Generate.Procedure
         private static float HeightIntensity;
 
         internal static Vector3 BaseLightDirection;
-        private static double SinCosMove;
-        private static double SinCosScale;
+        private static double SinCos1;
+        private static double SinCos2;
 
         internal static float StripeStart;
         internal static float StripeMultiplyFactor;
 
         internal static float DirtSmoothness;
+        internal static bool RandomColor;
 
         internal static void Load()
         {
@@ -53,8 +54,9 @@ namespace Generate.Procedure
 
             BaseLightDirection.Normalize();
 
-            SinCosMove = Rand.NextDouble() * 15000f;
-            SinCosScale = Rand.NextDouble() * 10000f;
+            var Scale = (float)Math.Pow(2, Rand.Next(8, 17));
+            SinCos1 = Rand.NextDouble() * Scale;
+            SinCos2 = Rand.NextDouble() * Scale;
 
             Texture.Handlers = Texture.Handlers.Where(x => Rand.Next(0, 2) == 1).ToArray();
 
@@ -62,6 +64,7 @@ namespace Generate.Procedure
             StripeMultiplyFactor = 0.5f - StripeStart * 0.5f;
 
             DirtSmoothness = Rand.NextFloat(0.5f, 1f);
+            RandomColor = Rand.Next(0, 2) == 1;
         }
 
         internal static float[,] GetHeights(int X, int Z)
@@ -81,7 +84,7 @@ namespace Generate.Procedure
 
         private static float GetHeight(int X, int Z)
         {
-            return (float)((Math.Sin(X * SinCosScale + SinCosMove) - 0.5f) * (Math.Cos(Math.Pow(Z, 3) * SinCosScale + SinCosMove) + 0.5f) * HeightIntensity) - HeightIntensity;
+            return (float)((Math.Sin(X * SinCos1 + SinCos2) - 0.5f) * (Math.Cos(Math.Pow(Z, 3) * SinCos2 + SinCos1) + 0.5f) * HeightIntensity) - HeightIntensity;
         }
     }
 }

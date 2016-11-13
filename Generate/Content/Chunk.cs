@@ -8,6 +8,15 @@ namespace Generate.Content
 {
     class Chunk : IDisposable
     {
+        private static Matrix RotateLeft;
+        private static Matrix RotateRight;
+
+        static Chunk()
+        {
+            Matrix.RotationZ((float)(Math.PI / 4), out RotateLeft);
+            Matrix.RotationZ(-(float)(Math.PI / 4), out RotateRight);
+        }
+
         internal const float Size = 64f;
 
         private ConcurrentBag<Model> Models = new ConcurrentBag<Model>();
@@ -38,44 +47,36 @@ namespace Generate.Content
             }
         }
 
-        internal void FixPosition(ref Vector3 Position, float Height)
+        private static float Sqrt2 = (float)Math.Sqrt(2);
+        private static float HalfSqrt2 = Sqrt2 / 2;
+
+        internal void FixPosition(ref Vector3 Position, float AddHeight)
         {
             if (Heights != null)
             {
-                // ToDo: Fix separate triangle positioning
-
                 var DistanceLeft = Position.X / Size + 0.5f;
                 var DistanceBottom = Position.Z / Size + 0.5f;
 
-                Console.WriteLine(DistanceBottom);
+                var TransformedPlace = Vector3.TransformCoordinate(new Vector3(DistanceLeft, DistanceBottom, 0), RotateLeft);
 
-                float MidHeight;
-
-                //+X,0 = right
-                //0,+Z = down
-
-                Console.WriteLine(DistanceLeft + " " + DistanceBottom);
-
-                if (DistanceLeft < DistanceBottom)
+                var AnchorHeight = Heights[1, 0];
+                if (TransformedPlace.X < 0)
                 {
-                    //Top Left
-
-                    float TopHeight = (1 - DistanceLeft) * Heights[0, 0] + DistanceLeft * Heights[1, 0];
-                    float BottomHeight = (1 - DistanceLeft) * Heights[0, 1] + DistanceLeft * Heights[1, 1];
-
-                    MidHeight = (1 - DistanceBottom) * TopHeight + DistanceBottom * BottomHeight;
-                }
-                else
-                {
-                    //Bottom Right
-
-                    float TopHeight = (1 - DistanceLeft) * Heights[0, 0] + DistanceLeft * Heights[1, 0];
-                    float BottomHeight = (1 - DistanceLeft) * Heights[0, 1] + DistanceLeft * Heights[1, 1];
-
-                    MidHeight = (1 - DistanceBottom) * TopHeight + DistanceBottom * BottomHeight;
+                    TransformedPlace.X *= -1;
+                    AnchorHeight = Heights[0, 1];
                 }
 
-                Position.Y = MidHeight + Height;
+                var DistanceAnchor = 1 - Sqrt2 * TransformedPlace.X;
+                var WeightedAnchorHeight = (1 - DistanceAnchor) * AnchorHeight;
+
+                var HeightBottomLeft = DistanceAnchor * Heights[0, 0] + WeightedAnchorHeight;
+                var HeightTopRight = DistanceAnchor * Heights[1, 1] + WeightedAnchorHeight;
+
+                var ScaleMovedUp = (TransformedPlace.Y - TransformedPlace.X) / (HalfSqrt2 - TransformedPlace.X) / 2;
+                var Height = ScaleMovedUp * HeightTopRight + (1 - ScaleMovedUp) * HeightBottomLeft;
+
+                Position.Y += Height;
+                Position.Y /= 2;
             }
         }
 

@@ -8,7 +8,7 @@ namespace Generate.Content
         // Credits to SharpDX Toolkit
         internal static Model Sphere(int Seed)
         {
-            int Tesselation = 8;
+            int Tesselation = 8 * Renderer.AntiAliasing.Count;
             float Diameter = 4.0f;
 
             int VerticalSegments = Tesselation;

@@ -9,18 +9,20 @@ namespace Generate.Input
 
         public static void Process()
         {
+            var Speed = 40;
+
             float Duration;
             if (KeyboardMouse.HasDuration(Keys.W, out Duration))
-                Camera.MoveForward(Duration * 40);
+                Camera.MoveForward(Duration * Speed);
 
             if (KeyboardMouse.HasDuration(Keys.A, out Duration))
-                Camera.MoveRight(-Duration * 20);
+                Camera.MoveRight(-Duration * Speed);
 
             if (KeyboardMouse.HasDuration(Keys.S, out Duration))
-                Camera.MoveForward(-Duration * 15);
+                Camera.MoveForward(-Duration * Speed);
 
             if (KeyboardMouse.HasDuration(Keys.D, out Duration))
-                Camera.MoveRight(Duration * 20);
+                Camera.MoveRight(Duration * Speed);
 
             if (KeyboardMouse.HasDuration(Keys.ShiftKey, out Duration) && !FixPosition)
                 Camera.MoveUp(-Duration * 25);
@@ -75,7 +77,7 @@ namespace Generate.Input
 
             if (FixPosition)
             {
-                Program.Chunks.Mid.FixPosition(ref Camera.Position, 3f);
+                Program.Chunks.Mid.FixPosition(ref Camera.Position, 10f);
             }
         }
     }

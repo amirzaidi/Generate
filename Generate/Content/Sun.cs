@@ -18,7 +18,7 @@ namespace Generate.Content
         {
             Scale = 500f * (float)Math.Sqrt(Renderer.AntiAliasing.Count);
 
-            int Tesselation = 8;
+            int Tesselation = 8 * Renderer.AntiAliasing.Count;
             float Diameter = 4.0f;
 
             int VerticalSegments = Tesselation;

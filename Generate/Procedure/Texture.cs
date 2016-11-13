@@ -1,4 +1,5 @@
-﻿using System;
+﻿using SharpDX.Mathematics.Interop;
+using System;
 using System.Threading.Tasks;
 
 namespace Generate.Procedure
@@ -20,13 +21,20 @@ namespace Generate.Procedure
 
         internal static void Colorize(float[,,] Colors, Random Rand)
         {
+            RawColor4 Color = Constants.Color;
+            if (Constants.RandomColor)
+            {
+                var Floats = new[] { 1f, 1f, 1f }.ToRGB();
+                Color = new RawColor4(Floats[0], Floats[1], Floats[2], 1);
+            }
+
             Parallel.For(0, Colors.GetLength(0), X =>
             {
                 Parallel.For(0, Colors.GetLength(1), Y =>
                 {
-                    Colors[X, Y, 0] *= Constants.Color.R;
-                    Colors[X, Y, 1] *= Constants.Color.G;
-                    Colors[X, Y, 2] *= Constants.Color.B;
+                    Colors[X, Y, 0] *= Color.R;
+                    Colors[X, Y, 1] *= Color.G;
+                    Colors[X, Y, 2] *= Color.B;
                 });
             });
         }
@@ -61,7 +69,7 @@ namespace Generate.Procedure
 
         private static void Pixelate(float[,,] Colors, Random Rand)
         {
-            int Side = (int)Math.Pow(2, Rand.Next(1, Constants.TextureDensityPower - 1));
+            int Side = (int)Math.Pow(2, Constants.TextureDensityPower - Rand.Next(0, 3));
             int SideScale = Colors.GetLength(0) / Side;
             int AreaScale = SideScale * SideScale;
             

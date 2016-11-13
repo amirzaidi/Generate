@@ -111,6 +111,8 @@ namespace Generate.Content
             {
                 Chunk.Dispose();
             }
+
+            Model.ModelsToLoad.Clear();
         }
     }
 }

@@ -6,7 +6,6 @@ using Buffer = SharpDX.Direct3D11.Buffer;
 using System;
 using System.Collections.Concurrent;
 using Generate.Procedure;
-using System.Threading.Tasks;
 
 namespace Generate.Content
 {

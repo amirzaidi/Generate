@@ -64,7 +64,7 @@ namespace Generate
                 }
             }
 
-            return new[] { r, g, b, 1f };
+            return new[] { r, g, b };
         }
 
         internal static float NextFloat(this Random Random, float Start = 0f, float End = 1f)

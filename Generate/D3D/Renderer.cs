@@ -72,7 +72,7 @@ namespace Generate.D3D
                 {
                     foreach (var PossibleResolution in Output.GetDisplayModeList(FormatRGB, 0))
                     {
-                        if (PossibleResolution.Scaling == DisplayModeScaling.Unspecified && PossibleResolution.Width >= Resolution.Width && PossibleResolution.Height >= Resolution.Height)
+                        if (PossibleResolution.Scaling == DisplayModeScaling.Unspecified && PossibleResolution.Width >= Resolution.Width)
                         {
                             Resolution = PossibleResolution;
                         }

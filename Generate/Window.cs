@@ -38,6 +38,7 @@ namespace Generate
         internal void Borderless(int Width, int Height)
         {
             Form.FormBorderStyle = FormBorderStyle.None;
+            Form.WindowState = FormWindowState.Maximized;
             Form.Location = new Point(0, 0);
             Form.Size = new Size(Width, Height);
         }

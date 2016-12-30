@@ -8,13 +8,10 @@ namespace Generate.Procedure
 
         internal Master(byte[] Seed)
         {
-            this.Seed = new byte[Seed.Length + 4];
-            Seed.CopyTo(this.Seed, 4);
-
-            this.Seed[0] = (byte)(Seed.Length & 0xff);
-            this.Seed[1] = (byte)((Seed.Length >> 8) & 0xff);
-            this.Seed[2] = (byte)((Seed.Length >> 16) & 0xff);
-            this.Seed[3] = (byte)((Seed.Length >> 24) & 0xff);
+            this.Seed = new byte[Seed.Length + 16];
+            
+            Hash.MD5(Seed).CopyTo(this.Seed, 0);
+            Seed.CopyTo(this.Seed, 16);
         }
 
         internal int GetSeed(byte[] For)

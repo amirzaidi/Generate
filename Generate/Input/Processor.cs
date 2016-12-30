@@ -77,7 +77,13 @@ namespace Generate.Input
 
             if (FixPosition)
             {
-                Program.Chunks.Mid.FixPosition(ref Camera.Position, 10f);
+                var Height = Program.Chunks.Mid.Height(Camera.Position, 10f);
+                if (Height != float.NaN)
+                {
+                    Camera.Position.Y += Height - 5f;
+                    Camera.Position.Y /= 2;
+                    Camera.Position.Y += 5f;
+                }
             }
         }
     }

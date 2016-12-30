@@ -6,7 +6,7 @@ namespace Generate
 {
     static class Extentions
     {
-        internal static byte[] AsciiBytes(this string In)
+        internal static byte[] ASCIIBytes(this string In)
         {
             return Encoding.ASCII.GetBytes(In);
         }

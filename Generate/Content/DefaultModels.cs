@@ -1,15 +1,15 @@
-﻿using Generate.D3D;
+﻿using SharpDX;
 using System;
+using Generate.D3D;
 
 namespace Generate.Content
 {
     class DefaultModels
     {
         // Credits to SharpDX Toolkit
-        internal static Model Sphere(int Seed)
+        internal static Model Sphere(int Seed, Vector3 Place, float Diameter = 4.0f)
         {
             int Tesselation = 8 * Renderer.AntiAliasing.Count;
-            float Diameter = 4.0f;
 
             int VerticalSegments = Tesselation;
             int HorizontalSegments = Tesselation * 2;
@@ -43,9 +43,9 @@ namespace Generate.Content
 
                     Vertices[VertexCount++] = new Vertex
                     {
-                        Position = new SharpDX.Vector3(dx * Radius, dy * Radius, dz * Radius),
-                        TexCoords = new SharpDX.Vector2(u, v),
-                        Normal = new SharpDX.Vector3(dx, dy, dz)
+                        Position = new Vector3(dx * Radius, dy * Radius, dz * Radius),
+                        TexCoords = new Vector2(u, v),
+                        Normal = new Vector3(dx, dy, dz)
                     };
                 }
             }
@@ -71,7 +71,7 @@ namespace Generate.Content
                 }
             }
 
-            return new Model(new SharpDX.Vector3(Seed / int.MaxValue * 50f, 0, Seed % 50), Vertices, Indices, Seed);
+            return new Model(Place, Vertices, Indices, Seed);
         }
 
         internal static Model Ground(int Seed, float[,] Heights)
@@ -80,31 +80,30 @@ namespace Generate.Content
             {
                 new Vertex //Bottom Left
                 {
-                    Position = new SharpDX.Vector3(-32, Heights[0, 0], -32),
-                    TexCoords = new SharpDX.Vector2(0, 0)
+                    Position = new Vector3(-32, Heights[0, 0], -32),
+                    TexCoords = new Vector2(0, 0)
                 },
                 new Vertex //Top Left
                 {
-                    Position = new SharpDX.Vector3(-32, Heights[0, 1], 32),
-                    TexCoords = new SharpDX.Vector2(0, 1)
+                    Position = new Vector3(-32, Heights[0, 1], 32),
+                    TexCoords = new Vector2(0, 1)
                 },
                 new Vertex //Top Right
                 {
-                    Position = new SharpDX.Vector3(32, Heights[1, 1], 32),
-                    TexCoords = new SharpDX.Vector2(1, 1)
+                    Position = new Vector3(32, Heights[1, 1], 32),
+                    TexCoords = new Vector2(1, 1)
                 },
                 new Vertex //Bottom Right
                 {
-                    Position = new SharpDX.Vector3(32, Heights[1, 0], -32),
-                    TexCoords = new SharpDX.Vector2(1, 0)
+                    Position = new Vector3(32, Heights[1, 0], -32),
+                    TexCoords = new Vector2(1, 0)
                 },
             };
-
-            // ToDo: Fix Ground Triangle Warp
+            
             Vertex.CalcSurfaceNormal(ref Vertices, 0, 3);
             Vertex.CalcSurfaceNormal(ref Vertices, 1, 4);
 
-            return new Model(new SharpDX.Vector3(0, -5, 0), Vertices, new[]
+            return new Model(Vector3.Zero, Vertices, new[]
             {
                 0, 1, 2, //Top Left
                 0, 2, 3 //Bottom Right
@@ -117,24 +116,24 @@ namespace Generate.Content
             {
                 new Vertex //Bottom left
                 {
-                    Position = new SharpDX.Vector3(-1, -1, 0),
-                    TexCoords = new SharpDX.Vector2(0, 0)
+                    Position = new Vector3(-1, -1, 0),
+                    TexCoords = new Vector2(0, 0)
                 },
                 new Vertex //Top middle
                 {
-                    Position = new SharpDX.Vector3(0, 1, 0),
-                    TexCoords = new SharpDX.Vector2(1, 0.5f)
+                    Position = new Vector3(0, 1, 0),
+                    TexCoords = new Vector2(1, 0.5f)
                 },
                 new Vertex //Bottom right
                 {
-                    Position = new SharpDX.Vector3(1, -1, 0),
-                    TexCoords = new SharpDX.Vector2(0, 1)
+                    Position = new Vector3(1, -1, 0),
+                    TexCoords = new Vector2(0, 1)
                 }
             };
 
             Vertex.CalcSurfaceNormal(ref Vertices);
 
-            return new Model(new SharpDX.Vector3(0, 0, Seed / int.MaxValue * 10), Vertices, new[]
+            return new Model(new Vector3(0, 0, Seed / int.MaxValue * 10), Vertices, new[]
             {
                 0, // Bottom left
 			    1, // Top middle

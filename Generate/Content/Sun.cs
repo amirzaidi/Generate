@@ -87,10 +87,10 @@ namespace Generate.Content
             // Allocate DataStream to receive the WIC image pixels
             using (var buffer = new DataStream(4, true, true))
             {
-                for (int i = 0; i < 4; i++)
-                {
-                    buffer.WriteByte(byte.MaxValue);
-                }
+                buffer.WriteByte(byte.MaxValue);
+                buffer.WriteByte(byte.MaxValue);
+                buffer.WriteByte(200);
+                buffer.WriteByte(byte.MaxValue);
 
                 // Copy the content of the WIC to the buffer
                 Texture = new Texture2D(Program.Renderer.Device, new Texture2DDescription

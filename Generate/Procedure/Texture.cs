@@ -24,7 +24,7 @@ namespace Generate.Procedure
             RawColor4 Color = Constants.Color;
             if (Constants.RandomColor)
             {
-                var Floats = new[] { 1f, 1f, 1f }.ToRGB();
+                var Floats = new[] { Rand.NextFloat(), 1f, Rand.NextFloat(0.25f, 0.65f) }.ToRGB();
                 Color = new RawColor4(Floats[0], Floats[1], Floats[2], 1);
             }
 

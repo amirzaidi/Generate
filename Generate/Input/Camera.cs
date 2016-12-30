@@ -6,7 +6,7 @@ namespace Generate.Input
     {
         internal static int RotationX = 0;
         internal static short RotationY = 0;
-        internal static Vector3 Position = Vector3.Zero;
+        internal static Vector3 Position;
 
         internal static Matrix Rotation
         {

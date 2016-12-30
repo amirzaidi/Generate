@@ -49,7 +49,7 @@ namespace Generate.D3D
 
             Device.CreateWithSwapChain(DriverType.Hardware, DeviceCreationFlags.BgraSupport | (Program.DebugMode ? DeviceCreationFlags.Debug : DeviceCreationFlags.None), Levels, new SwapChainDescription
             {
-                BufferCount = 2,
+                BufferCount = 1,
                 Flags = SwapChainFlags.AllowModeSwitch,
                 IsWindowed = true,
                 ModeDescription = new ModeDescription
@@ -65,6 +65,8 @@ namespace Generate.D3D
 
             AntiAliasing = new SampleDescription(AntiAliasingCount, 0);
             ShadowSize = AntiAliasingCount * 1536;
+
+            var Bounds = System.Windows.Forms.Screen.PrimaryScreen.Bounds;
             
             using (var Factory = SwapChain.GetParent<Factory>())
             {
@@ -72,7 +74,7 @@ namespace Generate.D3D
                 {
                     foreach (var PossibleResolution in Output.GetDisplayModeList(FormatRGB, 0))
                     {
-                        if (PossibleResolution.Scaling == DisplayModeScaling.Unspecified && PossibleResolution.Width >= Resolution.Width)
+                        if (PossibleResolution.Width == Bounds.Width && PossibleResolution.Height == Bounds.Height)
                         {
                             Resolution = PossibleResolution;
                         }

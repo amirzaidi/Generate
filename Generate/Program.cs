@@ -22,7 +22,7 @@ namespace Generate
         static void Main(string[] args)
         {
             Log("Seed? ");
-            Worker.Master = new Master(Console.ReadLine().AsciiBytes());
+            Worker.Master = new Master(Console.ReadLine().ASCIIBytes());
 
             Log("Debug Mode? Press enter for no: ");
             DebugMode = Console.ReadLine().Length > 0;

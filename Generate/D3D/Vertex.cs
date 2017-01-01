@@ -23,7 +23,7 @@ namespace Generate.D3D
         {
             if (End == 0)
             {
-                End = Vertices.Length;
+                End = Vertices.Length - 1;
             }
 
             var U = Vertices[Start + 1].Position - Vertices[Start].Position;

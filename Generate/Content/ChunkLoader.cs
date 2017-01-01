@@ -5,7 +5,7 @@ namespace Generate.Content
 {
     class ChunkLoader : IDisposable
     {
-        internal static int ChunkCountSide = 3, MovedX = 0, MovedZ = 0;
+        internal static int ChunkCountSide = 5, MovedX = 0, MovedZ = 0;
 
         private int ChunkCountMaxKey;
         private int ChunkCount;

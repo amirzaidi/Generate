@@ -1,4 +1,5 @@
 ﻿using Generate.D3D;
+using Generate.Procedure;
 using SharpDX;
 using SharpDX.Direct3D11;
 using SharpDX.DXGI;
@@ -87,9 +88,9 @@ namespace Generate.Content
             // Allocate DataStream to receive the WIC image pixels
             using (var buffer = new DataStream(4, true, true))
             {
-                buffer.WriteByte(byte.MaxValue);
-                buffer.WriteByte(byte.MaxValue);
-                buffer.WriteByte(200);
+                buffer.WriteByte((byte)Math.Round((Constants.Light.X * 0.75 + 0.25) * 255));
+                buffer.WriteByte((byte)Math.Round((Constants.Light.Y * 0.75 + 0.25) * 255));
+                buffer.WriteByte((byte)Math.Round((Constants.Light.Z * 0.75 + 0.25) * 255));
                 buffer.WriteByte(byte.MaxValue);
 
                 // Copy the content of the WIC to the buffer

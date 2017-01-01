@@ -1,4 +1,5 @@
 ﻿using Generate.Content;
+using System;
 using System.Windows.Forms;
 
 namespace Generate.Input
@@ -78,7 +79,7 @@ namespace Generate.Input
             if (FixPosition)
             {
                 var Height = Program.Chunks.Mid.Height(Camera.Position, 10f);
-                if (Height != float.NaN)
+                if (Math.Abs(Height) < 1000f)
                 {
                     Camera.Position.Y += Height - 5f;
                     Camera.Position.Y /= 2;

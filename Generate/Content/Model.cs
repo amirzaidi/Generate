@@ -15,7 +15,18 @@ namespace Generate.Content
 
         internal Vector3 MoveWorld;
         internal float Rotate = 0;
-        internal float Scale = 1;
+        internal Vector3 ScaleVector = new Vector3(1, 1, 1);
+        internal float Scale
+        {
+            get
+            {
+                return ScaleVector.Length();
+            }
+            set
+            {
+                ScaleVector = new Vector3(value, value, value);
+            }
+        }
 
         private int Seed;
         protected Vertex[] Vertices;
@@ -49,7 +60,7 @@ namespace Generate.Content
 
             LoadTexture();
 
-            RotateScale = Matrix.Scaling(Scale) * Matrix.RotationY(Rotate);
+            RotateScale = Matrix.Scaling(ScaleVector.X, ScaleVector.Y, ScaleVector.Z) * Matrix.RotationY(Rotate);
             TextureView = new ShaderResourceView(Program.Renderer.Device, Texture);
         }
 

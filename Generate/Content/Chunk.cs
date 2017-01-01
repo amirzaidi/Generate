@@ -33,8 +33,11 @@ namespace Generate.Content
 
                 Models.Add(DefaultModels.Ground(Random.Next(), Heights));
 
-                //Models.Add(DefaultModels.Sphere(Random.Next()));
-                //Models.Add(DefaultModels.Triangle(Random.Next()));
+                if (Constants.BuildingDensity != 0 && ((X % Constants.BuildingDensity) | (Z % Constants.BuildingDensity)) == 0)
+                {
+                    Console.WriteLine($"{X},{Z} Has building");
+                    Models.Add(DefaultModels.Building(Random));
+                }
 
                 Console.WriteLine($"Created {X}, {Z} at {Heights[0, 0]} {Heights[0, 1]} {Heights[1, 0]} {Heights[1, 1]}");
             });

@@ -1,6 +1,7 @@
 ﻿using SharpDX;
 using System;
 using Generate.D3D;
+using System.Collections.Generic;
 
 namespace Generate.Content
 {
@@ -139,6 +140,160 @@ namespace Generate.Content
 			    1, // Top middle
 			    2  // Bottom right
 			}, Seed);
+        }
+
+        internal static Model Building(Random Rand)
+        {
+            var VertexList = new List<Vertex>();
+
+            var Vertices = new[]
+            {
+                new Vertex //left 4
+                {
+                    Position = new Vector3(-32, 0, 32),
+                    TexCoords = new Vector2(0, 0),
+                    Normal = -Vector3.UnitX
+                },
+                new Vertex
+                {
+                    Position = new Vector3(-32, 0, -32),
+                    TexCoords = new Vector2(1, 0),
+                    Normal = -Vector3.UnitX
+                },
+                new Vertex
+                {
+                    Position = new Vector3(-32, 64, 32),
+                    TexCoords = new Vector2(0, 1),
+                    Normal = -Vector3.UnitX
+                },
+                new Vertex
+                {
+                    Position = new Vector3(-32, 64, -32),
+                    TexCoords = new Vector2(1, 1),
+                    Normal = -Vector3.UnitX
+                },
+                new Vertex //right 4
+                {
+                    Position = new Vector3(32, 0, -32),
+                    TexCoords = new Vector2(0, 0),
+                    Normal = Vector3.UnitX
+                },
+                new Vertex
+                {
+                    Position = new Vector3(32, 0, 32),
+                    TexCoords = new Vector2(1, 0),
+                    Normal = Vector3.UnitX
+                },
+                new Vertex
+                {
+                    Position = new Vector3(32, 64, -32),
+                    TexCoords = new Vector2(0, 1),
+                    Normal = Vector3.UnitX
+                },
+                new Vertex
+                {
+                    Position = new Vector3(32, 64, 32),
+                    TexCoords = new Vector2(1, 1),
+                    Normal = Vector3.UnitX
+                },
+                new Vertex //back 4
+                {
+                    Position = new Vector3(32, 0, 32),
+                    TexCoords = new Vector2(0, 0),
+                    Normal = Vector3.UnitZ
+                },
+                new Vertex
+                {
+                    Position = new Vector3(-32, 0, 32),
+                    TexCoords = new Vector2(1, 0),
+                    Normal = Vector3.UnitZ
+                },
+                new Vertex
+                {
+                    Position = new Vector3(32, 64, 32),
+                    TexCoords = new Vector2(0, 1),
+                    Normal = Vector3.UnitZ
+                },
+                new Vertex
+                {
+                    Position = new Vector3(-32, 64, 32),
+                    TexCoords = new Vector2(1, 1),
+                    Normal = Vector3.UnitZ
+                },
+                new Vertex //front 4
+                {
+                    Position = new Vector3(-32, 0, -32),
+                    TexCoords = new Vector2(0, 0),
+                    Normal = -Vector3.UnitZ
+                },
+                new Vertex
+                {
+                    Position = new Vector3(32, 0, -32),
+                    TexCoords = new Vector2(1, 0),
+                    Normal = -Vector3.UnitZ
+                },
+                new Vertex
+                {
+                    Position = new Vector3(-32, 64, -32),
+                    TexCoords = new Vector2(0, 1),
+                    Normal = -Vector3.UnitZ
+                },
+                new Vertex
+                {
+                    Position = new Vector3(32, 64, -32),
+                    TexCoords = new Vector2(1, 1),
+                    Normal = -Vector3.UnitZ
+                },
+                new Vertex //top 4
+                {
+                    Position = new Vector3(-32, 64, 32),
+                    TexCoords = new Vector2(0, 0),
+                    Normal = Vector3.UnitY
+                },
+                new Vertex
+                {
+                    Position = new Vector3(-32, 64, -32),
+                    TexCoords = new Vector2(1, 0),
+                    Normal = Vector3.UnitY
+                },
+                new Vertex
+                {
+                    Position = new Vector3(32, 64, 32),
+                    TexCoords = new Vector2(0, 1),
+                    Normal = Vector3.UnitY
+                },
+                new Vertex
+                {
+                    Position = new Vector3(32, 64, -32),
+                    TexCoords = new Vector2(1, 1),
+                    Normal = Vector3.UnitY
+                },
+            };
+
+            //Vertex.CalcSurfaceNormal(ref Vertices, 0, 3);
+            //Vertex.CalcSurfaceNormal(ref Vertices, 4, 7);
+
+            var Model = new Model(new Vector3(0, -Procedure.Constants.HeightIntensity, 0), Vertices, new[]
+            {
+                0, 2, 1, //left
+                1, 2, 3,
+
+                4, 6, 5, //right
+                5, 6, 7,
+
+                8, 10, 9,
+                9, 10, 11,
+
+                12, 14, 13,
+                13, 14, 15,
+
+                16, 18, 17,
+                17, 18, 19
+			}, Rand.Next());
+
+            Model.ScaleVector.Y = Procedure.Constants.BuildingHeight * (0.5f + 0.5f * (float)Rand.NextDouble());
+
+            return Model;
         }
     }
 }

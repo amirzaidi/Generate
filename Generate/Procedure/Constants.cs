@@ -13,7 +13,7 @@ namespace Generate.Procedure
 
         internal static int TextureDensityPower;
         internal static int TextureDensity;
-        private static float HeightIntensity;
+        internal static float HeightIntensity;
 
         internal static Vector3 BaseLightDirection;
         private static double SinCos1;
@@ -24,6 +24,9 @@ namespace Generate.Procedure
 
         internal static float DirtSmoothness;
         internal static bool RandomColor;
+
+        internal static int BuildingDensity = 0;
+        internal static int BuildingHeight;
 
         internal static void Load()
         {
@@ -36,10 +39,10 @@ namespace Generate.Procedure
             var Float = new[] { Hue, Saturation, Brightness }.ToRGB();
             Color = new RawColor4(Float[0], Float[1], Float[2], 1);
 
-            Float = new[] { Hue, Saturation, Brightness / 2f + 0.5f }.ToRGB();
+            Float = new[] { Hue, Saturation, Brightness * 0.5f + 0.5f }.ToRGB();
             Background = new RawColor4(Float[0], Float[1], Float[2], 1);
 
-            Float = new[] { Hue, Saturation * 0.25f, Brightness * 0.5f + 0.5f }.ToRGB();
+            Float = new[] { Hue, Saturation * 0.5f, Brightness * 0.5f + 0.5f }.ToRGB();
             Light = new Vector4(Float[0], Float[1], Float[2], 1);
 
             TextureDensityPower = Rand.Next(3, 8);
@@ -65,6 +68,13 @@ namespace Generate.Procedure
 
             DirtSmoothness = Rand.NextFloat(0.5f, 1f);
             RandomColor = Rand.Next(0, 2) == 1;
+
+            if (HeightIntensity < 10f)
+            {
+                BuildingDensity = (int)Math.Pow(2, Rand.Next(1, 5));
+                BuildingHeight = (int)Math.Pow(2, Rand.Next(1, 6));
+            }
+
         }
 
         internal static float[,] GetHeights(int X, int Z)

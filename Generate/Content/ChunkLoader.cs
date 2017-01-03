@@ -29,7 +29,7 @@ namespace Generate.Content
             {
                 for (int Z = 0; Z < ChunkCount; Z++)
                 {
-                    Chunks[X, Z] = new Chunk(X + MovedX, Z + MovedZ);
+                    Chunks[X, Z] = new Chunk(X + MovedX - ChunkCountSide, Z + MovedZ - ChunkCountSide);
                 }
             }
         }
@@ -56,7 +56,7 @@ namespace Generate.Content
                     Chunks[X, Z] = Chunks[X + 1, Z];
                 }
 
-                Chunks[ChunkCount - 1, Z] = new Chunk(ChunkCountMaxKey + MovedX, Z + MovedZ);
+                Chunks[ChunkCount - 1, Z] = new Chunk(ChunkCountSide + MovedX, Z + MovedZ - ChunkCountSide);
             });
         }
 
@@ -71,7 +71,7 @@ namespace Generate.Content
                     Chunks[X, Z] = Chunks[X - 1, Z];
                 }
 
-                Chunks[0, Z] = new Chunk(MovedX, Z + MovedZ);
+                Chunks[0, Z] = new Chunk(MovedX - ChunkCountSide, Z + MovedZ - ChunkCountSide);
             });
         }
 
@@ -86,7 +86,7 @@ namespace Generate.Content
                     Chunks[X, Z] = Chunks[X, Z + 1];
                 }
 
-                Chunks[X, ChunkCount - 1] = new Chunk(X + MovedX, ChunkCountMaxKey + MovedZ);
+                Chunks[X, ChunkCount - 1] = new Chunk(X + MovedX - ChunkCountSide, ChunkCountSide + MovedZ);
             });
         }
 
@@ -101,7 +101,7 @@ namespace Generate.Content
                     Chunks[X, Z] = Chunks[X, Z - 1];
                 }
 
-                Chunks[X, 0] = new Chunk(X + MovedX, MovedZ);
+                Chunks[X, 0] = new Chunk(X + MovedX - ChunkCountSide, MovedZ - ChunkCountSide);
             });
         }
 

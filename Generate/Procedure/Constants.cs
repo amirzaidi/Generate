@@ -57,7 +57,7 @@ namespace Generate.Procedure
 
             TextureDensityPower = Rand.Next(3, 8);
             TextureDensity = (int)Math.Pow(2, TextureDensityPower);
-            HeightIntensity = (float)Math.Pow(Rand.NextDouble(), 5) * 128f;
+            HeightIntensity = (float)Math.Pow(Rand.NextDouble(), 4) * 128f;
 
             BaseLightDirection = new Vector3(
                 Rand.NextFloat(-1f, 1f),

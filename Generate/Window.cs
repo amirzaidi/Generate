@@ -25,6 +25,7 @@ namespace Generate
             Form.MouseLeave += (s, e) => Cursor.Show();
             Form.MouseDown += Input.KeyboardMouse.MouseDown;
             Form.MouseUp += Input.KeyboardMouse.MouseUp;
+            Form.Deactivate += (s, e) => Program.VSync = 1;
         }
 
         internal RenderLoop Loop()

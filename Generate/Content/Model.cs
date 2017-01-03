@@ -28,7 +28,7 @@ namespace Generate.Content
             }
         }
 
-        private int Seed;
+        protected int Seed;
         protected Vertex[] Vertices;
         protected int[] Indices;
         private VertexBufferBinding VertexBinding;
@@ -39,14 +39,17 @@ namespace Generate.Content
 
         protected Matrix RotateScale;
 
-        internal Model(Vector3 MoveWorld, Vertex[] Vertices, int[] Indices, int Seed)
+        internal Model(Vector3 MoveWorld, Vertex[] Vertices, int[] Indices, int Seed, bool AutoLoad = true)
         {
             this.MoveWorld = MoveWorld;
             this.Seed = Seed;
             this.Vertices = Vertices;
             this.Indices = Indices;
 
-            ModelsToLoad.Push(this);
+            if (AutoLoad)
+            {
+                ModelsToLoad.Push(this);
+            }
         }
 
         internal void Load()
@@ -85,12 +88,17 @@ namespace Generate.Content
                 Procedure.Texture.Handlers[i](Colors, Random);
             }
 
+            TextureFromFloatArray(Colors);
+        }
+
+        protected void TextureFromFloatArray(float[,,] Colors)
+        {
             // Allocate DataStream to receive the WIC image pixels
-            using (var Buffer = new DataStream(Constants.TextureDensity * Constants.TextureDensity * 4, true, true))
+            using (var Buffer = new DataStream(Colors.GetLength(1) * Colors.GetLength(0) * 4, true, true))
             {
-                for (int X = 0; X < Colors.GetLength(0); X++)
+                for (int Y = 0; Y < Colors.GetLength(1); Y++)
                 {
-                    for (int Y = 0; Y < Colors.GetLength(1); Y++)
+                    for (int X = 0; X < Colors.GetLength(0); X++)
                     {
                         for (int C = 0; C < Colors.GetLength(2); C++)
                         {
@@ -107,7 +115,7 @@ namespace Generate.Content
                                 Buffer.WriteByte((byte)Math.Round(Colors[X, Y, C] * byte.MaxValue));
                             }
                         }
-                        
+
                         Buffer.WriteByte(byte.MaxValue); //Alpha
                     }
                 }
@@ -115,8 +123,8 @@ namespace Generate.Content
                 // Copy the content of the WIC to the buffer
                 Texture = new Texture2D(Program.Renderer.Device, new Texture2DDescription
                 {
-                    Width = Constants.TextureDensity,
-                    Height = Constants.TextureDensity,
+                    Width = Colors.GetLength(0),
+                    Height = Colors.GetLength(1),
                     ArraySize = 1,
                     BindFlags = BindFlags.ShaderResource,
                     Usage = ResourceUsage.Immutable,
@@ -125,7 +133,7 @@ namespace Generate.Content
                     MipLevels = 1,
                     OptionFlags = ResourceOptionFlags.None,
                     SampleDescription = new SampleDescription(1, 0),
-                }, new DataRectangle(Buffer.DataPointer, Constants.TextureDensity * 4));
+                }, new DataRectangle(Buffer.DataPointer, Colors.GetLength(0) * 4));
             }
         }
 
@@ -148,6 +156,45 @@ namespace Generate.Content
 
                 Context.PixelShader.SetShaderResource(0, TextureView);
                 Context.DrawIndexed(Indices.Length, 0, 0);
+            }
+        }
+
+        protected void BallVertices(int VerticalSegments, int HorizontalSegments, float Diameter)
+        {
+            Vertices = new Vertex[(VerticalSegments + 1) * (HorizontalSegments + 1)];
+
+            float Radius = Diameter / 2;
+
+            int VertexCount = 0;
+            // Create rings of vertices at progressively higher latitudes.
+            for (int i = 0; i <= VerticalSegments; i++)
+            {
+                //float v = 1.0f - (float)i / VerticalSegments;
+
+                var latitude = (float)((i * Math.PI / VerticalSegments) - Math.PI / 2.0);
+                var dy = (float)Math.Sin(latitude);
+                var dxz = (float)Math.Cos(latitude);
+
+                // Create a single ring of vertices at this latitude.
+                for (int j = 0; j <= HorizontalSegments; j++)
+                {
+                    float u = (float)j / HorizontalSegments;
+
+                    var longitude = (float)(j * 2.0 * Math.PI / HorizontalSegments);
+                    var dx = (float)Math.Sin(longitude);
+                    var dz = (float)Math.Cos(longitude);
+
+                    dx *= dxz;
+                    dz *= dxz;
+
+                    Vertices[VertexCount++] = new Vertex
+                    {
+                        Position = new Vector3(dx * Radius, dy * Radius, dz * Radius),
+                        //(u, v)
+                        TexCoords = new Vector2(u, dy * 0.5f + 0.5f),
+                        //Normal = new Vector3(dx, dy, dz)
+                    };
+                }
             }
         }
 

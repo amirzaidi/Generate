@@ -15,7 +15,8 @@ namespace Generate.Procedure
                 Colorize,
                 Dirt,
                 Stripe,
-                Pixelate
+                Pixelate,
+                Fade
             };
         }
 
@@ -41,15 +42,16 @@ namespace Generate.Procedure
 
         internal static void Dirt(float[,,] Colors, Random Rand)
         {
-            Parallel.For(0, Colors.GetLength(0), X =>
+            for (int X = 0; X < Colors.GetLength(0); X++)
             {
-                Parallel.For(0, Colors.GetLength(1), Y =>
+                for (int Y = 0; Y < Colors.GetLength(0); Y++)
                 {
-                    Colors[X, Y, 0] *= Rand.NextFloat(Constants.DirtSmoothness);
-                    Colors[X, Y, 1] *= Rand.NextFloat(Constants.DirtSmoothness);
-                    Colors[X, Y, 2] *= Rand.NextFloat(Constants.DirtSmoothness);
-                });
-            });
+                    for (int C = 0; C < 3; C++)
+                    {
+                        Colors[X, Y, C] *= Rand.NextFloat(Constants.DirtSmoothness);
+                    }
+                }
+            }
         }
 
         private static void Stripe(float[,,] Colors, Random Rand)
@@ -60,9 +62,10 @@ namespace Generate.Procedure
                 {
                     var Intensity = (float)Math.Sin((X + Y) * Math.PI * 2 / Constants.TextureDensity) * Constants.StripeMultiplyFactor + Constants.StripeStart;
 
-                    Colors[X, Y, 0] *= Intensity;
-                    Colors[X, Y, 1] *= Intensity;
-                    Colors[X, Y, 2] *= Intensity;
+                    for (int C = 0; C < 3; C++)
+                    {
+                        Colors[X, Y, C] *= Intensity;
+                    }
                 });
             });
         }
@@ -72,7 +75,7 @@ namespace Generate.Procedure
             int Side = (int)Math.Pow(2, Constants.TextureDensityPower - Rand.Next(0, 3));
             int SideScale = Colors.GetLength(0) / Side;
             int AreaScale = SideScale * SideScale;
-            
+
             Parallel.For(0, Side, X =>
             {
                 Parallel.For(0, Side, Y =>
@@ -83,9 +86,10 @@ namespace Generate.Procedure
                     {
                         for (int dY = 0; dY < SideScale; dY++)
                         {
-                            Color[0] += Colors[X * SideScale + dX, Y * SideScale + dY, 0];
-                            Color[1] += Colors[X * SideScale + dX, Y * SideScale + dY, 1];
-                            Color[2] += Colors[X * SideScale + dX, Y * SideScale + dY, 2];
+                            for (int C = 0; C < 3; C++)
+                            {
+                                Color[C] += Colors[X * SideScale + dX, Y * SideScale + dY, C];
+                            }
                         }
                     }
 
@@ -93,10 +97,30 @@ namespace Generate.Procedure
                     {
                         for (int dY = 0; dY < SideScale; dY++)
                         {
-                            Colors[X * SideScale + dX, Y * SideScale + dY, 0] = Color[0] / AreaScale;
-                            Colors[X * SideScale + dX, Y * SideScale + dY, 1] = Color[1] / AreaScale;
-                            Colors[X * SideScale + dX, Y * SideScale + dY, 2] = Color[2] / AreaScale;
+                            for (int C = 0; C < 3; C++)
+                            {
+                                Colors[X * SideScale + dX, Y * SideScale + dY, C] = Color[C] / AreaScale;
+                            }
                         }
+                    }
+                });
+            });
+        }
+
+        private static void Fade(float[,,] Colors, Random Rand)
+        {
+            Parallel.For(0, Colors.GetLength(1), Y =>
+            {
+                var Intensity = (1f - (float)Math.Sin(Y / Colors.GetLength(1) * Math.PI)) * Constants.FadeIntensity;
+                var OriginalIntensity = 1f - Intensity;
+
+                var AddColor = new[] { Intensity * Constants.FadeColor[0], Intensity * Constants.FadeColor[1], Intensity * Constants.FadeColor[2] };
+
+                Parallel.For(0, Colors.GetLength(0), X =>
+                {
+                    for (int C = 0; C < 3; C++)
+                    {
+                        Colors[X, Y, C] = Colors[X, Y, C] * OriginalIntensity + AddColor[C];
                     }
                 });
             });

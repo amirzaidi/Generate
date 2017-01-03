@@ -44,7 +44,8 @@ namespace Generate.D3D
         private PixelLightLayout PixelLight;
         private Buffer PixelLightBuffer;
 
-        private SamplerState Sampler;
+        private SamplerState ClampSampler;
+        private SamplerState SkySampler;
         private ShaderResourceView ShadowDepthMapView;
 
         internal CameraShader(Device Device, ModeDescription Resolution, Resource ShadowDepthBackbuffer)
@@ -95,9 +96,23 @@ namespace Generate.D3D
                 StructureByteStride = 0
             });
 
-            Sampler = new SamplerState(Device, new SamplerStateDescription
+            ClampSampler = new SamplerState(Device, new SamplerStateDescription
             {
                 Filter = Filter.MinLinearMagMipPoint,
+                AddressU = TextureAddressMode.Clamp,
+                AddressV = TextureAddressMode.Clamp,
+                AddressW = TextureAddressMode.Clamp,
+                BorderColor = Color.Transparent,
+                ComparisonFunction = Comparison.Never,
+                MaximumAnisotropy = 16,
+                MipLodBias = 0,
+                MinimumLod = -float.MaxValue,
+                MaximumLod = float.MaxValue
+            });
+
+            SkySampler = new SamplerState(Device, new SamplerStateDescription
+            {
+                Filter = Filter.MinMagMipLinear,
                 AddressU = TextureAddressMode.Clamp,
                 AddressV = TextureAddressMode.Clamp,
                 AddressW = TextureAddressMode.Clamp,
@@ -146,7 +161,7 @@ namespace Generate.D3D
             BufferStream.Write(PixelLight);
             Context.UnmapSubresource(PixelLightBuffer, 0);
 
-            Context.PixelShader.SetSampler(0, Sampler);
+            Context.PixelShader.SetSampler(0, ClampSampler);
             Context.PixelShader.SetShaderResource(1, ShadowDepthMapView);
 
             Context.InputAssembler.InputLayout = InputLayout;
@@ -159,6 +174,8 @@ namespace Generate.D3D
             Context.MapSubresource(PixelLightBuffer, MapMode.WriteDiscard, MapFlags.None, out BufferStream);
             BufferStream.Write(PixelLight);
             Context.UnmapSubresource(PixelLightBuffer, 0);
+
+            Context.PixelShader.SetSampler(0, SkySampler);
         }
 
         internal override void UpdateWorld(Matrix World)
@@ -184,7 +201,8 @@ namespace Generate.D3D
         public override void Dispose()
         {
             Utilities.Dispose(ref ShadowDepthMapView);
-            Utilities.Dispose(ref Sampler);
+            Utilities.Dispose(ref SkySampler);
+            Utilities.Dispose(ref ClampSampler);
             Utilities.Dispose(ref PixelLightBuffer);
             Utilities.Dispose(ref VertexLightBuffer);
             Utilities.Dispose(ref MatricesBuffer);

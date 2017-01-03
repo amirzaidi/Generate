@@ -27,7 +27,17 @@ namespace Generate.Procedure
 
         internal static int BuildingDensity = 0;
         internal static int BuildingHeight;
+        internal static float BuildingChance;
 
+        internal static float FadeIntensity;
+        internal static float[] FadeColor;
+
+        internal static int SunSeed;
+        internal static int SkySeed;
+
+        internal static int StarDensity = 0;
+        internal static float SunRotateTime;
+        
         internal static void Load()
         {
             var Rand = new Worker("constants");
@@ -42,7 +52,7 @@ namespace Generate.Procedure
             Float = new[] { Hue, Saturation, Brightness * 0.5f + 0.5f }.ToRGB();
             Background = new RawColor4(Float[0], Float[1], Float[2], 1);
 
-            Float = new[] { Hue, Saturation * 0.5f, Brightness * 0.5f + 0.5f }.ToRGB();
+            Float = new[] { Hue, Saturation * 0.5f, Brightness * 0.25f + 0.75f }.ToRGB();
             Light = new Vector4(Float[0], Float[1], Float[2], 1);
 
             TextureDensityPower = Rand.Next(3, 8);
@@ -61,7 +71,7 @@ namespace Generate.Procedure
             SinCos1 = Rand.NextDouble() * Scale;
             SinCos2 = Rand.NextDouble() * Scale;
 
-            Texture.Handlers = Texture.Handlers.Where(x => Rand.Next(0, 2) == 1).ToArray();
+            Texture.Handlers = Texture.Handlers.Where(x => Rand.Next(0, 5) < 3).ToArray();
 
             StripeStart = Rand.NextFloat(0.4f, 1f);
             StripeMultiplyFactor = 1f - StripeStart;
@@ -72,9 +82,22 @@ namespace Generate.Procedure
             if (HeightIntensity < 10f)
             {
                 BuildingDensity = (int)Math.Pow(2, Rand.Next(1, 5));
-                BuildingHeight = (int)Math.Pow(2, Rand.Next(1, 6));
+                BuildingHeight = (int)Math.Pow(2, Rand.Next(1, 5));
+                BuildingChance = Rand.NextFloat();
             }
 
+            FadeIntensity = Rand.NextFloat();
+            FadeColor = new[] { Rand.NextFloat(), Rand.NextFloat(), Rand.NextFloat() };
+
+            SunSeed = Rand.Next();
+            SkySeed = Rand.Next();
+
+            if (Brightness < 0.5f)
+            {
+                StarDensity = Rand.Next(1, 13);
+            }
+
+            SunRotateTime = 1000f * Rand.Next(1, 4);
         }
 
         internal static float[,] GetHeights(int X, int Z)

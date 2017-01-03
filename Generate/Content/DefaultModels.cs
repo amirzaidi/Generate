@@ -8,7 +8,7 @@ namespace Generate.Content
     class DefaultModels
     {
         // Credits to SharpDX Toolkit
-        internal static Model Sphere(int Seed, Vector3 Place, float Diameter = 4.0f)
+        /*internal static Model Sphere(int Seed, Vector3 Place, float Diameter = 4.0f)
         {
             int Tesselation = 8 * Renderer.AntiAliasing.Count;
 
@@ -73,7 +73,7 @@ namespace Generate.Content
             }
 
             return new Model(Place, Vertices, Indices, Seed);
-        }
+        }*/
 
         internal static Model Ground(int Seed, float[,] Heights)
         {
@@ -111,7 +111,7 @@ namespace Generate.Content
             }, Seed);
         }
 
-        internal static Model Triangle(int Seed)
+        /*internal static Model Triangle(int Seed)
         {
             var Vertices = new[]
             {
@@ -140,7 +140,7 @@ namespace Generate.Content
 			    1, // Top middle
 			    2  // Bottom right
 			}, Seed);
-        }
+        }*/
 
         internal static Model Building(Random Rand)
         {
@@ -270,10 +270,7 @@ namespace Generate.Content
                 },
             };
 
-            //Vertex.CalcSurfaceNormal(ref Vertices, 0, 3);
-            //Vertex.CalcSurfaceNormal(ref Vertices, 4, 7);
-
-            var Model = new Model(new Vector3(0, -Procedure.Constants.HeightIntensity, 0), Vertices, new[]
+            var Model = new Model(new Vector3(0, -Procedure.Constants.HeightIntensity * 2, 0), Vertices, new[]
             {
                 0, 2, 1, //left
                 1, 2, 3,

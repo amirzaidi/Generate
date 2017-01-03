@@ -12,11 +12,11 @@ namespace Generate
         internal static Renderer Renderer;
         internal static ChunkLoader Chunks;
         private static LoopWindow Window;
-        private static Overlay Overlay;
+        internal static Overlay Overlay;
 
         internal static bool Close = false;
         internal static int VSync = 1;
-        internal static bool DebugMode;
+        internal static bool DebugMode = false;
         private static uint Frames = 0;
 
         static void Main(string[] args)
@@ -24,20 +24,14 @@ namespace Generate
             Log("Seed? ");
             Worker.Master = new Master(Console.ReadLine().ASCIIBytes());
 
-            Log("Debug Mode? Press enter for no: ");
-            DebugMode = Console.ReadLine().Length > 0;
-
-            Log("Anti Aliasing? Press enter if unsure: ");
-            var Read = Console.ReadLine();
-            var AA = Read == string.Empty ? 1 : int.Parse(Read);
-
             Constants.Load();
             
             using (Window = new LoopWindow())
-            using (Renderer = new Renderer(Window, AA))
+            using (Renderer = new Renderer(Window))
             using (Overlay = new Overlay(Renderer.Device, Renderer.AntiAliasedBackBuffer))
             using (Chunks = new ChunkLoader())
-            using (Sun.Main = new Sun())
+            using (Sun.Main = new Sun(Constants.SunSeed))
+            using (Skybox.Main = new Skybox(Constants.SkySeed))
             using (var Loop = Window.Loop())
             {
                 KeyboardMouse.StartCapture();
@@ -75,6 +69,9 @@ namespace Generate
                 Chunks.RenderVisible();
 
                 ((CameraShader)Renderer.ActiveShader).DisableLighting();
+
+                Skybox.Main.MoveWorld = Camera.Position;
+                Skybox.Main.Render();
                 Sun.Main.Render();
             }
 
@@ -84,6 +81,9 @@ namespace Generate
             Overlay?.Draw($"Rotation ({Camera.RotationX}, {Camera.RotationY})", 10, 30, 500, 20);
             Overlay?.Draw($"Frames ({FPS}, VSync {VSync})", 10, 50, 500, 20);
             Overlay?.Draw($"Moved Chunks ({ChunkLoader.MovedX}, {ChunkLoader.MovedZ})", 10, 70, 500, 20);
+            Overlay?.Draw($"F1/2/4 Anti Aliasing Count", 10, 90, 500, 20);
+            Overlay?.Draw($"F9/10 Chunks, F11 Fullscreen, ESC Exit", 10, 110, 500, 20);
+            Overlay?.Draw($"F8 WASD Space/Shift Movement", 10, 130, 500, 20);
             Overlay?.End();
 
             Frames++;

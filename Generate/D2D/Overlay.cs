@@ -32,6 +32,11 @@ namespace Generate.D2D
             Context2D.Target = new Bitmap1(Context2D, BackBuffer.QueryInterface<Surface>());
         }
 
+        internal void SetBackBuffer(Texture2D BackBuffer)
+        {
+            Context2D.Target = new Bitmap1(Context2D, BackBuffer.QueryInterface<Surface>());
+        }
+
         internal void Start()
         {
             Context2D.BeginDraw();

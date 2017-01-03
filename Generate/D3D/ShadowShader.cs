@@ -23,7 +23,7 @@ namespace Generate.D3D
         internal ShadowShader(Device Device)
         {
             Context = Device.ImmediateContext;
-            Projection = Matrix.Transpose(Matrix.OrthoLH(256f, 256f, 128f, 3072f));
+            Projection = Matrix.Transpose(Matrix.OrthoLH(320f, 320f, 128f, 3072f));
             
             using (var ByteCode = ShaderBytecode.CompileFromFile("D3D/ShadowShaderVertex.hlsl", "VS", "vs_4_0"))
             {
@@ -52,8 +52,9 @@ namespace Generate.D3D
         internal override void Prepare()
         {
             base.Prepare();
-            
-            LightVP = Projection * Matrix.Transpose(Matrix.LookAtLH(Sun.Main.MoveWorld, Sun.Main.MoveWorld + Sun.Main.LightDirection, Vector3.UnitY));
+
+            var Move = new Vector3(Input.Camera.Position.X, 0, Input.Camera.Position.Z) - Sun.Main.LightDirection * Sun.Main.Scale;
+            LightVP = Projection * Matrix.Transpose(Matrix.LookAtLH(Move, Move + Sun.Main.LightDirection, Vector3.UnitY));
             
             Context.VertexShader.SetConstantBuffer(0, MatricesBuffer);
         }

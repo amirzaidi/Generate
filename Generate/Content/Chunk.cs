@@ -33,7 +33,7 @@ namespace Generate.Content
 
                 Models.Add(DefaultModels.Ground(Random.Next(), Heights));
 
-                if (Constants.BuildingDensity != 0 && ((X % Constants.BuildingDensity) | (Z % Constants.BuildingDensity)) == 0)
+                if (Constants.BuildingDensity != 0 && (((X + 1) % Constants.BuildingDensity) | ((Z + 1) % Constants.BuildingDensity)) == 0 && Random.NextFloat() < Constants.BuildingChance)
                 {
                     Console.WriteLine($"{X},{Z} Has building");
                     Models.Add(DefaultModels.Building(Random));
@@ -58,7 +58,7 @@ namespace Generate.Content
         {
             if (Heights == null)
             {
-                return float.NaN;
+                return 1000f;
             }
 
             var DistanceLeft = Position.X / Size + 0.5f;

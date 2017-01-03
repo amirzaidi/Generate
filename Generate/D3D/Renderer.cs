@@ -22,9 +22,6 @@ namespace Generate.D3D
             Height = 0
         };
 
-        internal static SampleDescription AntiAliasing;
-        internal static int ShadowSize;
-
         internal Texture2D AntiAliasedBackBuffer;
         
         private ShadowShader ShadowShader;
@@ -35,7 +32,7 @@ namespace Generate.D3D
 
         internal IShader ActiveShader;
         
-        internal Renderer(LoopWindow Window, int AntiAliasingCount)
+        internal Renderer(LoopWindow Window)
         {
             var Levels = new[]
             {
@@ -58,13 +55,10 @@ namespace Generate.D3D
                 },
                 OutputHandle = Window.Handle,
                 SampleDescription = new SampleDescription(1, 0),
-                //SwapEffect = SwapEffect.FlipDiscard,
                 SwapEffect = SwapEffect.Discard,
                 Usage = Usage.RenderTargetOutput
             }, out Device, out SwapChain);
-
-            AntiAliasing = new SampleDescription(AntiAliasingCount, 0);
-            ShadowSize = AntiAliasingCount * 1536;
+            
 
             var Bounds = System.Windows.Forms.Screen.PrimaryScreen.Bounds;
             
@@ -85,6 +79,29 @@ namespace Generate.D3D
             Window.Borderless(Resolution.Width, Resolution.Height);
             ResizeBuffers();
             
+            ShadowShader = new ShadowShader(Device);
+            ShadowDepth = new Depth(Device, new ModeDescription
+            {
+                Width = 6000,
+                Height = 6000
+            }, new SampleDescription(1, 0));
+
+            CameraShader = new CameraShader(Device, Resolution, ShadowDepth.DepthStencilView.Resource);
+            LoadBuffersCameraWithAA(1);
+
+            Device.ImmediateContext.InputAssembler.PrimitiveTopology = PrimitiveTopology.TriangleList;
+
+            if (Program.DebugMode)
+            {
+                Debug = new DeviceDebug(Device);
+            }
+        }
+
+        internal void LoadBuffersCameraWithAA(int AA)
+        {
+            var AntiAliasing = new SampleDescription(AA, 0);
+
+            Utilities.Dispose(ref AntiAliasedBackBuffer);
             AntiAliasedBackBuffer = new Texture2D(Device, new Texture2DDescription
             {
                 Format = Resolution.Format,
@@ -95,23 +112,9 @@ namespace Generate.D3D
                 BindFlags = BindFlags.RenderTarget,
                 SampleDescription = AntiAliasing
             });
-
-            ShadowShader = new ShadowShader(Device);
-            ShadowDepth = new Depth(Device, new ModeDescription
-            {
-                Width = ShadowSize,
-                Height = ShadowSize
-            }, new SampleDescription(1, 0));
-
-            CameraShader = new CameraShader(Device, Resolution, ShadowDepth.DepthStencilView.Resource);
+            
+            Utilities.Dispose(ref CameraDepth);
             CameraDepth = new Depth(Device, Resolution, AntiAliasing);
-
-            Device.ImmediateContext.InputAssembler.PrimitiveTopology = PrimitiveTopology.TriangleList;
-
-            if (Program.DebugMode)
-            {
-                Debug = new DeviceDebug(Device);
-            }
         }
 
         private void ResizeBuffers()

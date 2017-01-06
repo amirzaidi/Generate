@@ -146,7 +146,6 @@ namespace Generate.D3D
                 AddressW = TextureAddressMode.Clamp,
                 BorderColor = Color.Transparent,
                 ComparisonFunction = Comparison.Never,
-                MaximumAnisotropy = 16,
                 MipLodBias = 0,
                 MinimumLod = -float.MaxValue,
                 MaximumLod = float.MaxValue
@@ -154,7 +153,7 @@ namespace Generate.D3D
 
             SkySampler = new SamplerState(Device, new SamplerStateDescription
             {
-                Filter = Filter.MinMagMipLinear,
+                Filter = Filter.Anisotropic,
                 AddressU = TextureAddressMode.Clamp,
                 AddressV = TextureAddressMode.Clamp,
                 AddressW = TextureAddressMode.Clamp,

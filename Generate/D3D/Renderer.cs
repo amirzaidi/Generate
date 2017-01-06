@@ -79,15 +79,7 @@ namespace Generate.D3D
             Window.Borderless(Resolution.Width, Resolution.Height);
             ResizeBuffers();
             
-            ShadowShader = new ShadowShader(Device);
-            ShadowDepth = new Depth(Device, new ModeDescription
-            {
-                Width = 6000,
-                Height = 6000
-            }, new SampleDescription(1, 0));
-
-            CameraShader = new CameraShader(Device, Resolution, ShadowDepth.DepthStencilView.Resource);
-            LoadBuffersCameraWithAA(1);
+            LoadWithAA(1);
 
             Device.ImmediateContext.InputAssembler.PrimitiveTopology = PrimitiveTopology.TriangleList;
 
@@ -97,9 +89,12 @@ namespace Generate.D3D
             }
         }
 
-        internal void LoadBuffersCameraWithAA(int AA)
+        internal void LoadWithAA(int AA)
         {
             var AntiAliasing = new SampleDescription(AA, 0);
+
+            Utilities.Dispose(ref ShadowShader);
+            ShadowShader = new ShadowShader(Device);
 
             Utilities.Dispose(ref AntiAliasedBackBuffer);
             AntiAliasedBackBuffer = new Texture2D(Device, new Texture2DDescription
@@ -115,6 +110,16 @@ namespace Generate.D3D
             
             Utilities.Dispose(ref CameraDepth);
             CameraDepth = new Depth(Device, Resolution, AntiAliasing);
+
+            Utilities.Dispose(ref ShadowDepth);
+            ShadowDepth = new Depth(Device, new ModeDescription
+            {
+                Width = 1500 * AA,
+                Height = 1500 * AA
+            }, new SampleDescription(1, 0));
+
+            Utilities.Dispose(ref CameraShader);
+            CameraShader = new CameraShader(Device, Resolution, ShadowDepth.DepthStencilView.Resource, AA);
         }
 
         private void ResizeBuffers()

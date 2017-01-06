@@ -69,8 +69,8 @@ namespace Generate.Content
 
                 for (int i = 0; i < Count; i++)
                 {
-                    int X = Rand.Next(20, 3180);
-                    int Y = Rand.Next(20, 3180);
+                    int X = Rand.Next(10, 3190);
+                    int Y = Rand.Next(10, 3190);
                     int MaxdX = Rand.Next(0, 4);
                     int MaxdY = MaxdX * 2;
 

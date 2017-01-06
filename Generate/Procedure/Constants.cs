@@ -7,6 +7,8 @@ namespace Generate.Procedure
 {
     static class Constants
     {
+        internal static float StartLight;
+
         internal static RawColor4 Color;
         internal static RawColor4 Background;
         internal static Vector4 Light;
@@ -34,9 +36,15 @@ namespace Generate.Procedure
 
         internal static int SunSeed;
         internal static int SkySeed;
-
         internal static int StarDensity = 0;
         internal static float SunRotateTime;
+
+        internal static float FogIntensity;
+        internal static float FogBias;
+        internal static float FogFactor;
+        internal static float FogBackgroundFactor;
+
+        internal static float CharSize;
         
         internal static void Load()
         {
@@ -45,6 +53,8 @@ namespace Generate.Procedure
             var Hue = Rand.NextFloat();
             var Saturation = Rand.NextFloat();
             var Brightness = Rand.NextFloat();
+
+            StartLight = Brightness * 0.3f;
 
             var Float = new[] { Hue, Saturation, Brightness }.ToRGB();
             Color = new RawColor4(Float[0], Float[1], Float[2], 1);
@@ -82,7 +92,7 @@ namespace Generate.Procedure
             if (HeightIntensity < 10f)
             {
                 BuildingDensity = (int)Math.Pow(2, Rand.Next(1, 5));
-                BuildingHeight = (int)Math.Pow(2, Rand.Next(1, 5));
+                BuildingHeight = (int)Math.Pow(2, Rand.Next(1, 4));
                 BuildingChance = Rand.NextFloat();
             }
 
@@ -94,10 +104,17 @@ namespace Generate.Procedure
 
             if (Brightness < 0.5f)
             {
-                StarDensity = Rand.Next(1, 13);
+                StarDensity = (int)Math.Ceiling((0.5f - Brightness) * 26);
             }
 
             SunRotateTime = 1000f * Rand.Next(1, 4);
+
+            FogIntensity = Rand.NextFloat(End: 0.2f);
+            FogBias = Rand.NextFloat(0.1f);
+            FogFactor = Rand.NextFloat(End: 0.25f);
+            FogBackgroundFactor = Rand.NextFloat();
+
+            CharSize = Rand.NextFloat(30f, 90f);
         }
 
         internal static float[,] GetHeights(int X, int Z)
@@ -117,7 +134,7 @@ namespace Generate.Procedure
 
         private static float GetHeight(int X, int Z)
         {
-            return (float)((Math.Sin(X * SinCos1 + SinCos2) - 0.5f) * (Math.Cos(Math.Pow(Z, 3) * SinCos2 + SinCos1) + 0.5f) * HeightIntensity) - HeightIntensity;
+            return (float)((Math.Sin(Math.Pow(X, 5) * SinCos1 + SinCos2) - 0.5f) * (Math.Cos(Math.Pow(Z, 7) * SinCos1 + SinCos2) + 0.5f) * HeightIntensity) - HeightIntensity;
         }
     }
 }

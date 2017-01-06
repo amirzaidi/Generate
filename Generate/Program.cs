@@ -51,9 +51,9 @@ namespace Generate
         static void Frame()
         {
             Processor.Process();
-
+            
             Model ToLoad;
-            if (Model.ModelsToLoad.TryPop(out ToLoad))
+            for (int i = 0; i < 2 && Model.ModelsToLoad.TryPop(out ToLoad); i++)
             {
                 ToLoad.Load();
             }
@@ -74,7 +74,7 @@ namespace Generate
                 Skybox.Main.Render();
                 Sun.Main.Render();
             }
-
+            
             Overlay?.Start();
             Overlay?.DrawCrosshair();
             Overlay?.Draw($"Coords ({Camera.Position.X}, {Camera.Position.Y}, {Camera.Position.Z})", 10, 10, 500, 20);

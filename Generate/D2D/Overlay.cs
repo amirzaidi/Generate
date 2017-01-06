@@ -29,7 +29,7 @@ namespace Generate.D2D
             Context2D.PrimitiveBlend = PrimitiveBlend.SourceOver;
             Brush = new SolidColorBrush(Context2D, Color.White);
 
-            Context2D.Target = new Bitmap1(Context2D, BackBuffer.QueryInterface<Surface>());
+            SetBackBuffer(BackBuffer);
         }
 
         internal void SetBackBuffer(Texture2D BackBuffer)

@@ -54,7 +54,7 @@ namespace Generate.Content
         private static float Sqrt2 = (float)Math.Sqrt(2);
         private static float HalfSqrt2 = Sqrt2 / 2;
 
-        internal float Height(Vector3 Position, float AddHeight)
+        internal float Height(Vector3 Position)
         {
             if (Heights == null)
             {

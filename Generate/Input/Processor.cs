@@ -10,26 +10,24 @@ namespace Generate.Input
 
         public static void Process()
         {
-            var Speed = 35;
-
             float Duration;
             if (KeyboardMouse.HasDuration(Keys.W, out Duration))
-                Camera.MoveForward(Duration * Speed);
+                Camera.MoveForward(Duration * Procedure.Constants.CharSize);
 
             if (KeyboardMouse.HasDuration(Keys.A, out Duration))
-                Camera.MoveRight(-Duration * Speed);
+                Camera.MoveRight(-Duration * Procedure.Constants.CharSize);
 
             if (KeyboardMouse.HasDuration(Keys.S, out Duration))
-                Camera.MoveForward(-Duration * Speed);
+                Camera.MoveForward(-Duration * Procedure.Constants.CharSize);
 
             if (KeyboardMouse.HasDuration(Keys.D, out Duration))
-                Camera.MoveRight(Duration * Speed);
+                Camera.MoveRight(Duration * Procedure.Constants.CharSize);
 
             if (KeyboardMouse.HasDuration(Keys.ShiftKey, out Duration) && !FixPosition)
-                Camera.MoveUp(-Duration * Speed);
+                Camera.MoveUp(-Duration * Procedure.Constants.CharSize);
 
             if (KeyboardMouse.HasDuration(Keys.Space, out Duration) && !FixPosition)
-                Camera.MoveUp(Duration * Speed);
+                Camera.MoveUp(Duration * Procedure.Constants.CharSize);
 
             if (Camera.Position.X > Chunk.Size / 2)
             {
@@ -55,17 +53,17 @@ namespace Generate.Input
 
             if (KeyboardMouse.Pressed(Keys.F1) > 0)
             {
-                Program.Renderer.LoadBuffersCameraWithAA(1);
+                Program.Renderer.LoadWithAA(1);
                 Program.Overlay.SetBackBuffer(Program.Renderer.AntiAliasedBackBuffer);
             }
             else if (KeyboardMouse.Pressed(Keys.F2) > 0)
             {
-                Program.Renderer.LoadBuffersCameraWithAA(2);
+                Program.Renderer.LoadWithAA(2);
                 Program.Overlay.SetBackBuffer(Program.Renderer.AntiAliasedBackBuffer);
             }
             else if (KeyboardMouse.Pressed(Keys.F4) > 0)
             {
-                Program.Renderer.LoadBuffersCameraWithAA(4);
+                Program.Renderer.LoadWithAA(4);
                 Program.Overlay.SetBackBuffer(Program.Renderer.AntiAliasedBackBuffer);
             }
 
@@ -94,12 +92,11 @@ namespace Generate.Input
 
             if (FixPosition)
             {
-                var Height = Program.Chunks.Mid.Height(Camera.Position, 10f);
+                var Height = Program.Chunks.Mid.Height(Camera.Position) + Procedure.Constants.CharSize * 0.5f;
                 if (Math.Abs(Height) < 1000f)
                 {
-                    Camera.Position.Y += Height - 15f;
+                    Camera.Position.Y += Height;
                     Camera.Position.Y /= 2;
-                    Camera.Position.Y += 15f;
                 }
             }
         }

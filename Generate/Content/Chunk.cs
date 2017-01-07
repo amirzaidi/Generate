@@ -24,7 +24,7 @@ namespace Generate.Content
         private float[,] Heights;
         private Task Init;
 
-        internal Chunk(int X, int Z)
+        internal Chunk(long X, long Z)
         {
             Init = Task.Run(() =>
             {

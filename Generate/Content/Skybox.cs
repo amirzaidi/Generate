@@ -69,15 +69,28 @@ namespace Generate.Content
                 for (int i = 0; i < Count; i++)
                 {
                     int X = Rand.Next(10, 3190);
-                    int Y = Rand.Next(10, 3190);
-                    int MaxdX = Rand.Next(0, 4);
+                    int Y = Rand.Next(1000, 3190);
+                    int MaxdX = Rand.Next(0, 7);
+                    if (MaxdX > 3)
+                    {
+                        MaxdX = 0;
+                    }
+
                     int MaxdY = MaxdX * 2;
 
-                    if (Y > 2800)
+                    if (Y > 2900)
                     {
-                        var Scale = (double)(Y - 2600) / 200;
+                        var Scale = Math.Pow((double)(Y - 2700) / 200, 1.25);
                         MaxdX *= (int)Math.Ceiling(Scale);
-                        MaxdY = (int)Math.Ceiling(MaxdY / Scale);
+
+                        if (Y > 3150)
+                        {
+                            MaxdY = (int)Math.Ceiling(MaxdY / Math.Pow(Scale, 8));
+                        }
+                        else
+                        {
+                            MaxdY = (int)Math.Ceiling(MaxdY / Math.Pow(Scale, 3));
+                        }
                     }
 
                     for (int dX = -MaxdX; dX <= MaxdX; dX++)

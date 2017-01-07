@@ -77,13 +77,13 @@ namespace Generate
             
             Overlay?.Start();
             Overlay?.DrawCrosshair();
-            Overlay?.Draw($"Coords ({Camera.Position.X}, {Camera.Position.Y}, {Camera.Position.Z})", 10, 10, 500, 20);
-            Overlay?.Draw($"Rotation ({Camera.RotationX}, {Camera.RotationY})", 10, 30, 500, 20);
-            Overlay?.Draw($"Frames ({FPS}, VSync {VSync})", 10, 50, 500, 20);
-            Overlay?.Draw($"Moved Chunks ({ChunkLoader.MovedX}, {ChunkLoader.MovedZ}) - Size {ChunkLoader.ChunkCountSide}", 10, 70, 500, 20);
-            Overlay?.Draw($"F1/2/4 Anti Aliasing Count", 10, 90, 500, 20);
-            Overlay?.Draw($"F9/10 Chunks, F11 Fullscreen, ESC Exit", 10, 110, 500, 20);
-            Overlay?.Draw($"F8 WASD Space/Shift Movement", 10, 130, 500, 20);
+            Overlay?.Draw($"Coords ({Camera.Position.X}, {Camera.Position.Y}, {Camera.Position.Z})", 10, 10, 600, 20);
+            Overlay?.Draw($"Rotation ({Camera.RotationX}, {Camera.RotationY})", 10, 30, 600, 20);
+            Overlay?.Draw($"Frames ({FPS}, VSync {VSync})", 10, 50, 600, 20);
+            Overlay?.Draw($"Moved Chunks ({ChunkLoader.MovedX}, {ChunkLoader.MovedZ}) - Size {ChunkLoader.ChunkCountSide}", 10, 70, 600, 20);
+            Overlay?.Draw($"F1/2/4 Anti Aliasing Count", 10, 90, 600, 20);
+            Overlay?.Draw($"F9/10 Chunks, F11 Fullscreen, ESC Exit", 10, 110, 600, 20);
+            Overlay?.Draw($"F8 WASD Space/Shift Movement", 10, 130, 600, 20);
             Overlay?.End();
 
             Frames++;

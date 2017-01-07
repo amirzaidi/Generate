@@ -20,6 +20,7 @@ namespace Generate.Procedure
         internal static Vector3 BaseLightDirection;
         private static double SinCos1;
         private static double SinCos2;
+        private static double SinCos3;
 
         internal static float StripeStart;
         internal static float StripeMultiplyFactor;
@@ -80,6 +81,7 @@ namespace Generate.Procedure
             var Scale = (float)Math.Pow(2, Rand.Next(8, 17));
             SinCos1 = Rand.NextDouble() * Scale;
             SinCos2 = Rand.NextDouble() * Scale;
+            SinCos3 = Math.Sqrt(SinCos1 * SinCos2);
 
             Texture.Handlers = Texture.Handlers.Where(x => Rand.Next(0, 5) < 3).ToArray();
 
@@ -117,7 +119,7 @@ namespace Generate.Procedure
             CharSize = Rand.NextFloat(30f, 90f);
         }
 
-        internal static float[,] GetHeights(int X, int Z)
+        internal static float[,] GetHeights(long X, long Z)
         {
             var Places = new float[2, 2];
 
@@ -132,9 +134,21 @@ namespace Generate.Procedure
             return Places;
         }
 
-        private static float GetHeight(int X, int Z)
+        private static float GetHeight(long X, long Z)
         {
-            return (float)((Math.Sin(Math.Pow(X, 5) * SinCos1 + SinCos2) - 0.5f) * (Math.Cos(Math.Pow(Z, 7) * SinCos1 + SinCos2) + 0.5f) * HeightIntensity) - HeightIntensity;
+            ulong uX = (ulong)X;
+            ulong uZ = (ulong)Z;
+
+            uint x1 = (uint)(uX & uint.MaxValue);
+            uint x2 = (uint)(uX >> 32);
+
+            uint z1 = (uint)(uZ & uint.MaxValue);
+            uint z2 = (uint)(uZ >> 32);
+
+            double Xin = x1 * SinCos1 + ~x2 * SinCos2 + Math.Pow(uX % 1234, 2) * SinCos3;
+            double Zin = ~z1 * SinCos2 + z2 * SinCos1 + Math.Pow(uZ % 2345, 3) * SinCos3;
+
+            return (float)(Math.Sin(Xin) * Math.Cos(Zin) * HeightIntensity) - HeightIntensity;
         }
     }
 }

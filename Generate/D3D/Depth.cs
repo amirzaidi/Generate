@@ -14,9 +14,9 @@ namespace Generate.D3D
             IsDepthEnabled = true,
             DepthWriteMask = DepthWriteMask.All,
             DepthComparison = Comparison.Less,
-            IsStencilEnabled = true,
-            StencilReadMask = 0xFF,
-            StencilWriteMask = 0xFF,
+            IsStencilEnabled = false,
+            //StencilReadMask = 0xFF,
+            //StencilWriteMask = 0xFF,
             // Stencil operation if pixel front-facing.
             FrontFace = new DepthStencilOperationDescription()
             {

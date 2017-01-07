@@ -109,8 +109,8 @@ namespace Generate.Procedure
 
             SunRotateTime = 1000f * Rand.Next(1, 4);
 
-            FogIntensity = Rand.NextFloat(0.0225f, End: 0.225f) * (float)Math.Pow(Brightness, 0.33);
-            FogBias = Rand.NextFloat(FogIntensity * 0.55f);
+            FogIntensity = 0.2f * (float)Math.Pow(Brightness * Rand.NextFloat(), 0.5);
+            FogBias = Rand.NextFloat(FogIntensity * 0.75f);
             FogFactor = (float)Math.Pow(Rand.NextFloat(0.075f, End: 0.14f), 1.25);
             FogBackgroundFactor = Rand.NextFloat(0.667f);
 

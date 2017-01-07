@@ -15,7 +15,7 @@ namespace Generate.Content
             int VerticalSegments = Tesselation;
             int HorizontalSegments = Tesselation * 2;
             
-            BallVertices(VerticalSegments, HorizontalSegments, 3750f);
+            BallVertices(VerticalSegments, HorizontalSegments, 15 * 1024f);
 
             // Fill the index buffer with triangles joining each pair of latitude rings.
 

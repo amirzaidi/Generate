@@ -72,7 +72,7 @@ namespace Generate.D3D
 
         internal CameraShader(Device Device, ModeDescription Resolution, Resource ShadowDepthBackbuffer, int AA)
         {
-            Projection = Matrix.Transpose(Matrix.PerspectiveFovLH((float)(Math.PI / 2), (float)(Resolution.Width) / Resolution.Height, 0.1f, 4 * 1024f));
+            Projection = Matrix.Transpose(Matrix.PerspectiveFovLH((float)(Math.PI / 2), (float)(Resolution.Width) / Resolution.Height, 0.1f, 16 * 1024f));
             Context = Device.ImmediateContext;
 
             using (var ByteCode = ShaderBytecode.CompileFromFile("D3D/CameraShaderVertex.hlsl", "VS", "vs_4_0"))

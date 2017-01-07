@@ -32,13 +32,16 @@ float4 PS(Pixel Input) : SV_Target
 {
     float4 TexColor = Texture.Sample(Sampler, Input.TexCoord);
 
-    float Random1 = cos(Input.LightViewPosition.x * Input.LightViewPosition.y * 123456789) * Factor + LightColor.r * (1 - Factor);
-    float Random2 = cos(Input.LightViewPosition.x * Input.LightViewPosition.y * 12345678) * Factor + LightColor.g * (1 - Factor);
-    float Random3 = cos(Input.LightViewPosition.x * Input.LightViewPosition.y * 1234567) * Factor + LightColor.b * (1 - Factor);
-    float Random = float3(Random1, Random2, Random3);
+    float Seed = (LightDirection.x + LightDirection.y * 2 + LightDirection.z * 3) * (Input.TexCoord.x + 1) * Input.TexCoord.y;
+
+    float Random1 = cos(Seed * 123456789) * Factor + LightColor.r * (1 - Factor);
+    float Random2 = cos(Seed * 12345678) * Factor + LightColor.g * (1 - Factor);
+    float Random3 = cos(Seed * 1234567) * Factor + LightColor.b * (1 - Factor);
+    float3 Random = float3(Random1, Random2, Random3);
     
     if (StartLight == 1)
     {
+        //return float4(Random, 1);
         Input.FogIntensity *= BackgroundFactor;
         return float4(Input.FogIntensity * Random + (1 - Input.FogIntensity) * TexColor.xyz, 1);
     }

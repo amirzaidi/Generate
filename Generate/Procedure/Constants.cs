@@ -89,7 +89,7 @@ namespace Generate.Procedure
             DirtSmoothness = Rand.NextFloat(0.5f, 1f);
             RandomColor = Rand.Next(0, 2) == 1;
 
-            if (HeightIntensity < 10f)
+            if (HeightIntensity < 15f)
             {
                 BuildingDensity = (int)Math.Pow(2, Rand.Next(1, 5));
                 BuildingHeight = (int)Math.Pow(2, Rand.Next(1, 4));
@@ -109,10 +109,10 @@ namespace Generate.Procedure
 
             SunRotateTime = 1000f * Rand.Next(1, 4);
 
-            FogIntensity = Rand.NextFloat(End: 0.2f);
-            FogBias = Rand.NextFloat(0.1f);
-            FogFactor = Rand.NextFloat(End: 0.25f);
-            FogBackgroundFactor = Rand.NextFloat();
+            FogIntensity = Rand.NextFloat(0.0225f, End: 0.225f) * (float)Math.Pow(Brightness, 0.33);
+            FogBias = Rand.NextFloat(FogIntensity * 0.55f);
+            FogFactor = (float)Math.Pow(Rand.NextFloat(0.075f, End: 0.14f), 1.25);
+            FogBackgroundFactor = Rand.NextFloat(0.667f);
 
             CharSize = Rand.NextFloat(30f, 90f);
         }

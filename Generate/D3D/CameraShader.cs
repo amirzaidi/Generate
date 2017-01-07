@@ -72,7 +72,7 @@ namespace Generate.D3D
 
         internal CameraShader(Device Device, ModeDescription Resolution, Resource ShadowDepthBackbuffer, int AA)
         {
-            Projection = Matrix.Transpose(Matrix.PerspectiveFovLH((float)(Math.PI / 2), (float)(Resolution.Width) / Resolution.Height, 0.1f, 2 * 1024f));
+            Projection = Matrix.Transpose(Matrix.PerspectiveFovLH((float)(Math.PI / 2), (float)(Resolution.Width) / Resolution.Height, 0.1f, 4 * 1024f));
             Context = Device.ImmediateContext;
 
             using (var ByteCode = ShaderBytecode.CompileFromFile("D3D/CameraShaderVertex.hlsl", "VS", "vs_4_0"))
@@ -194,7 +194,7 @@ namespace Generate.D3D
             {
                 Factor = Procedure.Constants.FogFactor,
                 BackgroundFactor = Procedure.Constants.FogBackgroundFactor,
-                ShadowBias = 0.0016f / (float)Math.Pow(AA, 2)
+                ShadowBias = 0.0024f / (float)Math.Pow(AA, 2.5)
             });
             Context.UnmapSubresource(PixelFogBuffer, 0);
         }

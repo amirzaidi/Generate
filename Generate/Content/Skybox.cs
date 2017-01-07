@@ -1,5 +1,4 @@
-﻿using Generate.D3D;
-using Generate.Procedure;
+﻿using Generate.Procedure;
 using SharpDX;
 using System;
 
@@ -11,12 +10,12 @@ namespace Generate.Content
 
         internal Skybox(int Seed) : base(Vector3.Zero, null, null, Seed, false)
         {
-            int Tesselation = 32;
+            int Tesselation = 16;
 
             int VerticalSegments = Tesselation;
             int HorizontalSegments = Tesselation * 2;
             
-            BallVertices(VerticalSegments, HorizontalSegments, 2000.0f);
+            BallVertices(VerticalSegments, HorizontalSegments, 3750f);
 
             // Fill the index buffer with triangles joining each pair of latitude rings.
 

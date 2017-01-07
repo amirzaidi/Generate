@@ -14,25 +14,7 @@ namespace Generate.D3D
             IsDepthEnabled = true,
             DepthWriteMask = DepthWriteMask.All,
             DepthComparison = Comparison.Less,
-            IsStencilEnabled = false,
-            //StencilReadMask = 0xFF,
-            //StencilWriteMask = 0xFF,
-            // Stencil operation if pixel front-facing.
-            FrontFace = new DepthStencilOperationDescription()
-            {
-                FailOperation = StencilOperation.Keep,
-                DepthFailOperation = StencilOperation.Increment,
-                PassOperation = StencilOperation.Keep,
-                Comparison = Comparison.Always
-            },
-            // Stencil operation if pixel is back-facing.
-            BackFace = new DepthStencilOperationDescription()
-            {
-                FailOperation = StencilOperation.Keep,
-                DepthFailOperation = StencilOperation.Decrement,
-                PassOperation = StencilOperation.Keep,
-                Comparison = Comparison.Always
-            }
+            IsStencilEnabled = false
         };
 
         // Setup the raster description which will determine how and what polygon will be drawn.

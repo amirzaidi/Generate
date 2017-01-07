@@ -172,7 +172,7 @@ namespace Generate.D3D
             
             ShadowDepthMapView = new ShaderResourceView(Device, ShadowDepthBackbuffer, new ShaderResourceViewDescription
             {
-                Format = Format.R24_UNorm_X8_Typeless,
+                Format = Format.R32_Float,
                 Dimension = ShaderResourceViewDimension.Texture2D,
                 Texture2D = new ShaderResourceViewDescription.Texture2DResource
                 {

@@ -78,7 +78,8 @@ namespace Generate.D3D
 
             Window.Borderless(Resolution.Width, Resolution.Height);
             ResizeBuffers();
-            
+
+            Depth.InitStencilRasterState(Device);
             LoadWithAA(1);
 
             Device.ImmediateContext.InputAssembler.PrimitiveTopology = PrimitiveTopology.TriangleList;
@@ -178,6 +179,11 @@ namespace Generate.D3D
         {
             Utilities.Dispose(ref CameraShader);
             Utilities.Dispose(ref CameraDepth);
+
+            Utilities.Dispose(ref ShadowShader);
+            Utilities.Dispose(ref ShadowDepth);
+
+            Depth.DisposeStates();
 
             if (Device?.ImmediateContext != null)
             {

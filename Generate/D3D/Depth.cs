@@ -8,49 +8,8 @@ namespace Generate.D3D
 {
     class Depth : IDisposable
     {
-        private DepthStencilState DepthStencilState;
-        internal DepthStencilView DepthStencilView;
-        private RasterizerState RasterizerState;
-        private ModeDescription Resolution;
-
-        internal Depth(Device Device, ModeDescription Resolution, SampleDescription AA)
-        {
-            this.Resolution = Resolution;
-
-            DepthStencilState = new DepthStencilState(Device, StencilDesc);
-            Device.ImmediateContext.OutputMerger.SetDepthStencilState(DepthStencilState, 1);
-
-            DepthStencilView = new DepthStencilView(Device, new Texture2D(Device, BufferDesc(Resolution.Width, Resolution.Height, AA)), new DepthStencilViewDescription
-            {
-                Format = Format.D24_UNorm_S8_UInt,
-                Dimension = (AA.Count > 1 ? DepthStencilViewDimension.Texture2DMultisampled : DepthStencilViewDimension.Texture2D),
-                Texture2D = new DepthStencilViewDescription.Texture2DResource
-                {
-                    MipSlice = 0
-                }
-            });
-
-            // Create the rasterizer state from the description we just filled out and set the rasterizer state.
-            RasterizerState = new RasterizerState(Device, RasterDesc);
-        }
-
-        internal void Prepare(DeviceContext Context)
-        {
-            Context.Rasterizer.State = RasterizerState;
-            Context.Rasterizer.SetViewport(0, 0, Resolution.Width, Resolution.Height, 0, 1);
-            Context.ClearDepthStencilView(DepthStencilView, DepthStencilClearFlags.Depth | DepthStencilClearFlags.Stencil, 1, 0);
-        }
-
-        public void Dispose()
-        {
-            Utilities.Dispose(ref RasterizerState);
-            DepthStencilView?.Resource?.Dispose();
-            Utilities.Dispose(ref DepthStencilView);
-            Utilities.Dispose(ref DepthStencilState);
-        }
-
         // Initialize and set up the description of the stencil state.
-        private static DepthStencilStateDescription StencilDesc = new DepthStencilStateDescription
+        private static DepthStencilStateDescription DepthStencilDesc = new DepthStencilStateDescription
         {
             IsDepthEnabled = true,
             DepthWriteMask = DepthWriteMask.All,
@@ -76,26 +35,8 @@ namespace Generate.D3D
             }
         };
 
-        private static Texture2DDescription BufferDesc(int Width, int Height, SampleDescription AA)
-        {
-            // Initialize and set up the description of the depth buffer.
-            return new Texture2DDescription
-            {
-                Width = Width,
-                Height = Height,
-                MipLevels = 1,
-                ArraySize = 1,
-                Format = Format.R24G8_Typeless,
-                SampleDescription = AA,
-                Usage = ResourceUsage.Default,
-                BindFlags = BindFlags.DepthStencil | BindFlags.ShaderResource,
-                CpuAccessFlags = CpuAccessFlags.None,
-                OptionFlags = ResourceOptionFlags.None
-            };
-        }
-
         // Setup the raster description which will determine how and what polygon will be drawn.
-        private static RasterizerStateDescription RasterDesc = new RasterizerStateDescription
+        private static RasterizerStateDescription RasterizerDesc = new RasterizerStateDescription
         {
             IsAntialiasedLineEnabled = false,
             CullMode = CullMode.Back,
@@ -104,9 +45,72 @@ namespace Generate.D3D
             IsDepthClipEnabled = true,
             FillMode = FillMode.Solid,
             IsFrontCounterClockwise = false,
-            IsMultisampleEnabled = false,
+            IsMultisampleEnabled = true,
             IsScissorEnabled = false,
             SlopeScaledDepthBias = 0.0f
         };
+
+        private static DepthStencilState DepthStencilState;
+        private static RasterizerState RasterizerState;
+
+        internal static void InitStencilRasterState(Device Device)
+        {
+            DepthStencilState = new DepthStencilState(Device, DepthStencilDesc);
+            Device.ImmediateContext.OutputMerger.SetDepthStencilState(DepthStencilState, 1);
+
+            RasterizerState = new RasterizerState(Device, RasterizerDesc);
+            Device.ImmediateContext.Rasterizer.State = RasterizerState;
+        }
+
+        internal static void DisposeStates()
+        {
+            Utilities.Dispose(ref RasterizerState);
+            Utilities.Dispose(ref DepthStencilState);
+        }
+
+        internal DepthStencilView DepthStencilView;
+        private Texture2D DepthStencilTexture;
+        private ModeDescription Resolution;
+
+        internal Depth(Device Device, ModeDescription Resolution, SampleDescription AA)
+        {
+            this.Resolution = Resolution;
+            
+            DepthStencilTexture = new Texture2D(Device, new Texture2DDescription
+            {
+                Width = Resolution.Width,
+                Height = Resolution.Height,
+                MipLevels = 1,
+                ArraySize = 1,
+                Format = Format.R32_Typeless,
+                SampleDescription = AA,
+                Usage = ResourceUsage.Default,
+                BindFlags = BindFlags.DepthStencil | BindFlags.ShaderResource,
+                CpuAccessFlags = CpuAccessFlags.None,
+                OptionFlags = ResourceOptionFlags.None
+            });
+
+            DepthStencilView = new DepthStencilView(Device, DepthStencilTexture, new DepthStencilViewDescription
+            {
+                Format = Format.D32_Float,
+                Dimension = (AA.Count > 1 ? DepthStencilViewDimension.Texture2DMultisampled : DepthStencilViewDimension.Texture2D),
+                Texture2D = new DepthStencilViewDescription.Texture2DResource
+                {
+                    MipSlice = 0
+                }
+            });
+        }
+
+        internal void Prepare(DeviceContext Context)
+        {
+            Context.Rasterizer.SetViewport(0, 0, Resolution.Width, Resolution.Height, 0, 1);
+            Context.ClearDepthStencilView(DepthStencilView, DepthStencilClearFlags.Depth | DepthStencilClearFlags.Stencil, 1, 0);
+        }
+
+        public void Dispose()
+        {
+            Utilities.Dispose(ref DepthStencilView);
+            Utilities.Dispose(ref DepthStencilTexture);
+        }
     }
 }

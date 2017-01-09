@@ -53,7 +53,7 @@ namespace Generate
             Processor.Process();
             
             Model ToLoad;
-            for (int i = 0; i < 2 && Model.ModelsToLoad.TryPop(out ToLoad); i++)
+            for (int i = 0; i < 2 - VSync && Model.ModelsToLoad.TryPop(out ToLoad); i++)
             {
                 ToLoad.Load();
             }

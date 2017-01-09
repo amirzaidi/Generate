@@ -253,8 +253,10 @@ namespace Generate.D3D
         {
             Context.VertexShader.SetConstantBuffer(0, null);
             Context.VertexShader.SetConstantBuffer(1, null);
+            Context.VertexShader.SetConstantBuffer(2, null);
 
             Context.PixelShader.SetConstantBuffer(0, null);
+            Context.PixelShader.SetConstantBuffer(1, null);
             Context.PixelShader.SetSampler(0, null);
             Context.PixelShader.SetShaderResource(1, null);
         }
@@ -264,7 +266,9 @@ namespace Generate.D3D
             Utilities.Dispose(ref ShadowDepthMapView);
             Utilities.Dispose(ref SkySampler);
             Utilities.Dispose(ref ClampSampler);
+            Utilities.Dispose(ref PixelFogBuffer);
             Utilities.Dispose(ref PixelLightBuffer);
+            Utilities.Dispose(ref VertexFogBuffer);
             Utilities.Dispose(ref VertexLightBuffer);
             Utilities.Dispose(ref MatricesBuffer);
 

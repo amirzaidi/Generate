@@ -41,7 +41,7 @@ Pixel VS(Vertex Input)
     Output.Position = mul(float4(Input.Position, 1), CameraWVP);
     
     Output.LightViewPosition = mul(mul(float4(Input.Position, 1), World), LightVP);
-    Output.FogIntensity = saturate(log(mul(float4(Input.Position, 1), CameraWV).z) * Intensity - Bias);
+    Output.FogIntensity = pow(saturate(log(mul(float4(Input.Position, 1), CameraWV).z) * Intensity - Bias), 2);
     
     return Output;
 }

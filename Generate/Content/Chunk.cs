@@ -28,7 +28,7 @@ namespace Generate.Content
         {
             Init = Task.Run(() =>
             {
-                Random = new Worker($"{X}.{Z}.chunk");
+                Random = new Worker($"{X}.{Z}");
                 Heights = Constants.GetHeights(X, Z);
 
                 Models.Add(DefaultModels.Ground(Random.Next(), Heights));

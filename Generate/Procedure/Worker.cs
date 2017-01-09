@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Text;
 
 namespace Generate.Procedure
 {
@@ -7,7 +6,7 @@ namespace Generate.Procedure
     {
         internal static Master Master;
 
-        public Worker(string For) : this(Encoding.ASCII.GetBytes(For))
+        public Worker(string For) : this(For.ASCIIBytes())
         {
         }
 

@@ -21,6 +21,8 @@ namespace Generate
 
         static void Main(string[] args)
         {
+            Console.Title = "Generate CLI";
+
             Log("Seed? ");
             Worker.Master = new Master(Console.ReadLine().ASCIIBytes());
 
@@ -46,7 +48,7 @@ namespace Generate
         }
 
         static System.Diagnostics.Stopwatch Watch;
-        static float FPS = 0f;
+        public static float FPS = 1f;
 
         static void Frame()
         {
@@ -101,6 +103,6 @@ namespace Generate
             => Log(In + "\r\n", From);
 
         internal static void Log(object In, string From = null)
-            => Console.Write($"[{DateTime.Now.ToLongTimeString()}] {From ?? "Main"} - {In}");
+            => System.Threading.Tasks.Task.Run(() => Console.Write($"[{DateTime.Now.ToLongTimeString()}] {From ?? "Main"} - {In}"));
     }
 }

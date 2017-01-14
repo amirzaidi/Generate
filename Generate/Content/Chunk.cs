@@ -23,6 +23,8 @@ namespace Generate.Content
         private Worker Random;
         private float[,] Heights;
         private Task Init;
+        private float BuildingHeight = 0f;
+        private Vector2 BuildingScale;
 
         internal Chunk(long X, long Z)
         {
@@ -32,14 +34,19 @@ namespace Generate.Content
                 Heights = Constants.GetHeights(X, Z);
 
                 Models.Add(DefaultModels.Ground(Random.Next(), Heights));
-
+                
                 if (Constants.BuildingDensity != 0 && (((X + 1) % Constants.BuildingDensity) | ((Z + 1) % Constants.BuildingDensity)) == 0 && Random.NextFloat() < Constants.BuildingChance)
                 {
-                    Console.WriteLine($"{X},{Z} Has building");
-                    Models.Add(DefaultModels.Building(Random));
+                    Program.LogLine("Has building", $"{X},{Z}");
+
+                    var Building = DefaultModels.Building(Random);
+                    BuildingHeight = Building.MoveWorld.Y + Building.ScaleVector.Y;
+                    BuildingScale = new Vector2(Building.ScaleVector.X, Building.ScaleVector.Z);
+
+                    Models.Add(Building);
                 }
 
-                Console.WriteLine($"Created {X}, {Z} at {Heights[0, 0]} {Heights[0, 1]} {Heights[1, 0]} {Heights[1, 1]}");
+                Program.LogLine($"Heights {Heights[0, 0]} {Heights[0, 1]} {Heights[1, 0]} {Heights[1, 1]}", $"{X},{Z}");
             });
         }
 
@@ -59,6 +66,11 @@ namespace Generate.Content
             if (Heights == null)
             {
                 return 1000f;
+            }
+
+            if (BuildingHeight != 0f && Position.X > -BuildingScale.X && Position.X < BuildingScale.X && Position.Z > -BuildingScale.Y && Position.Z < BuildingScale.Y)
+            {
+                return BuildingHeight;
             }
 
             var DistanceLeft = Position.X / Size + 0.5f;

@@ -62,131 +62,126 @@ namespace Generate.Content
             {
                 new Vertex //left 4
                 {
-                    Position = new Vector3(-32, 0, 32),
+                    Position = new Vector3(-1, 0, 1),
                     TexCoords = new Vector2(0, 0),
                     Normal = -Vector3.UnitX
                 },
                 new Vertex
                 {
-                    Position = new Vector3(-32, 0, -32),
+                    Position = new Vector3(-1, 0, -1),
                     TexCoords = new Vector2(1, 0),
                     Normal = -Vector3.UnitX
                 },
                 new Vertex
                 {
-                    Position = new Vector3(-32, 64, 32),
+                    Position = new Vector3(-1, 1, 1),
                     TexCoords = new Vector2(0, 1),
                     Normal = -Vector3.UnitX
                 },
                 new Vertex
                 {
-                    Position = new Vector3(-32, 64, -32),
+                    Position = new Vector3(-1, 1, -1),
                     TexCoords = new Vector2(1, 1),
                     Normal = -Vector3.UnitX
                 },
                 new Vertex //right 4
                 {
-                    Position = new Vector3(32, 0, -32),
+                    Position = new Vector3(1, 0, -1),
                     TexCoords = new Vector2(0, 0),
                     Normal = Vector3.UnitX
                 },
                 new Vertex
                 {
-                    Position = new Vector3(32, 0, 32),
+                    Position = new Vector3(1, 0, 1),
                     TexCoords = new Vector2(1, 0),
                     Normal = Vector3.UnitX
                 },
                 new Vertex
                 {
-                    Position = new Vector3(32, 64, -32),
+                    Position = new Vector3(1, 1, -1),
                     TexCoords = new Vector2(0, 1),
                     Normal = Vector3.UnitX
                 },
                 new Vertex
                 {
-                    Position = new Vector3(32, 64, 32),
+                    Position = new Vector3(1, 1, 1),
                     TexCoords = new Vector2(1, 1),
                     Normal = Vector3.UnitX
                 },
                 new Vertex //back 4
                 {
-                    Position = new Vector3(32, 0, 32),
+                    Position = new Vector3(1, 0, 1),
                     TexCoords = new Vector2(0, 0),
                     Normal = Vector3.UnitZ
                 },
                 new Vertex
                 {
-                    Position = new Vector3(-32, 0, 32),
+                    Position = new Vector3(-1, 0, 1),
                     TexCoords = new Vector2(1, 0),
                     Normal = Vector3.UnitZ
                 },
                 new Vertex
                 {
-                    Position = new Vector3(32, 64, 32),
+                    Position = new Vector3(1, 1, 1),
                     TexCoords = new Vector2(0, 1),
                     Normal = Vector3.UnitZ
                 },
                 new Vertex
                 {
-                    Position = new Vector3(-32, 64, 32),
+                    Position = new Vector3(-1, 1, 1),
                     TexCoords = new Vector2(1, 1),
                     Normal = Vector3.UnitZ
                 },
                 new Vertex //front 4
                 {
-                    Position = new Vector3(-32, 0, -32),
+                    Position = new Vector3(-1, 0, -1),
                     TexCoords = new Vector2(0, 0),
                     Normal = -Vector3.UnitZ
                 },
                 new Vertex
                 {
-                    Position = new Vector3(32, 0, -32),
+                    Position = new Vector3(1, 0, -1),
                     TexCoords = new Vector2(1, 0),
                     Normal = -Vector3.UnitZ
                 },
                 new Vertex
                 {
-                    Position = new Vector3(-32, 64, -32),
+                    Position = new Vector3(-1, 1, -1),
                     TexCoords = new Vector2(0, 1),
                     Normal = -Vector3.UnitZ
                 },
                 new Vertex
                 {
-                    Position = new Vector3(32, 64, -32),
+                    Position = new Vector3(1, 1, -1),
                     TexCoords = new Vector2(1, 1),
                     Normal = -Vector3.UnitZ
                 },
                 new Vertex //top 4
                 {
-                    Position = new Vector3(-32, 64, 32),
+                    Position = new Vector3(-1, 1, 1),
                     TexCoords = new Vector2(0, 0),
                     Normal = Vector3.UnitY
                 },
                 new Vertex
                 {
-                    Position = new Vector3(-32, 64, -32),
+                    Position = new Vector3(-1, 1, -1),
                     TexCoords = new Vector2(1, 0),
                     Normal = Vector3.UnitY
                 },
                 new Vertex
                 {
-                    Position = new Vector3(32, 64, 32),
+                    Position = new Vector3(1, 1, 1),
                     TexCoords = new Vector2(0, 1),
                     Normal = Vector3.UnitY
                 },
                 new Vertex
                 {
-                    Position = new Vector3(32, 64, -32),
+                    Position = new Vector3(1, 1, -1),
                     TexCoords = new Vector2(1, 1),
                     Normal = Vector3.UnitY
                 },
             };
-
-            //Vertex.CalcSurfaceNormal(ref Vertices, 0, 3, true);
-            //Vertex.CalcSurfaceNormal(ref Vertices, 4, 7, true);
-            //Vertex.CalcSurfaceNormal(ref Vertices, 8, 11, true);
-            //Vertex.CalcSurfaceNormal(ref Vertices, 12, 15, true);
-
+            
             var Model = new Model(new Vector3(0, -Procedure.Constants.HeightIntensity * 2, 0), Vertices, new[]
             {
                 0, 2, 1, //left
@@ -205,7 +200,9 @@ namespace Generate.Content
                 17, 18, 19
 			}, Rand.Next());
 
-            Model.ScaleVector.Y = Procedure.Constants.BuildingHeight * (0.5f + 0.5f * (float)Rand.NextDouble());
+            Model.ScaleVector.X = 32 * Rand.NextFloat(0.5f, 1.0f);
+            Model.ScaleVector.Y = 64 * Procedure.Constants.BuildingHeight * Rand.NextFloat(0.35f, 1.0f);
+            Model.ScaleVector.Z = 32 * Rand.NextFloat(0.5f, 1.0f);
 
             return Model;
         }

@@ -30,7 +30,8 @@ static const float HalfPI = 1.57079632679f;
 
 float Rand(float3 Seed)
 {
-    return frac(sin(dot(float3(18.8315638359, 7.9272242975, 17.9122659205), Seed.xyz)) * 44843.158924414) * 2 - 1;
+    //return frac(sin(dot(float3(18.8315638359, 7.9272242975, 17.9122659205), Seed.xyz)) * 44843.158924414) * 2 - 1;
+    return frac(sin(dot(Seed.xyz, float3(12.9898, 28.233, 45.5432))) * 42558.5453) * 2 - 1;
 }
 
 float4 PS(Pixel Input) : SV_Target

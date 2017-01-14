@@ -65,7 +65,7 @@ namespace Generate.Input
             }
             else if (e.State == KeyState.SystemKeyDown)
             {
-                Console.WriteLine("System + " + e.Key);
+                Program.LogLine("System + " + e.Key, "KeyboardEvent");
             }
         }
 

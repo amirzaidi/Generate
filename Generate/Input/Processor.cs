@@ -93,10 +93,11 @@ namespace Generate.Input
             if (FixPosition)
             {
                 var Height = Program.Chunks.Mid.Height(Camera.Position) + Procedure.Constants.CharSize * 0.5f;
+                
                 if (Math.Abs(Height) < 1000f)
                 {
                     Camera.Position.Y += Height;
-                    Camera.Position.Y /= 2;
+                    Camera.Position.Y /= 2f;
                 }
             }
         }

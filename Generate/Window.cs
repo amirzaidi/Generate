@@ -1,8 +1,6 @@
 ﻿using SharpDX.Windows;
 using System;
-using System.Collections;
 using System.Drawing;
-using System.Threading.Tasks;
 using System.Windows.Forms;
 
 namespace Generate
@@ -20,12 +18,14 @@ namespace Generate
 
         internal LoopWindow()
         {
-            Form = new RenderForm();
+            Form = new RenderForm("Generate");
             Form.MouseEnter += (s, e) => Cursor.Hide();
             Form.MouseLeave += (s, e) => Cursor.Show();
             Form.MouseDown += Input.KeyboardMouse.MouseDown;
             Form.MouseUp += Input.KeyboardMouse.MouseUp;
             Form.Deactivate += (s, e) => Program.VSync = 1;
+
+            Form.Icon = Icon.ExtractAssociatedIcon(System.Reflection.Assembly.GetExecutingAssembly().Location);
         }
 
         internal RenderLoop Loop()

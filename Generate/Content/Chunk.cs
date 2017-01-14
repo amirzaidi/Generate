@@ -41,7 +41,7 @@ namespace Generate.Content
 
                     var Building = DefaultModels.Building(Random);
                     BuildingHeight = Building.MoveWorld.Y + Building.ScaleVector.Y;
-                    BuildingScale = new Vector2(Building.ScaleVector.X, Building.ScaleVector.Z);
+                    BuildingScale = new Vector2(Building.ScaleVector.X + 2f, Building.ScaleVector.Z + 2f);
 
                     Models.Add(Building);
                 }

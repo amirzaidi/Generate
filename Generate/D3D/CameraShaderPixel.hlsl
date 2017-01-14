@@ -64,13 +64,13 @@ float4 PS(Pixel Input) : SV_Target
         float depthValue = DepthMapTexture.Sample(Sampler, DepthCoords).r;
 
         // Calculate the depth of the light.
-        float lightDepthValue = Input.LightViewPosition.z / Input.LightViewPosition.w - ShadowBias; //0.0001;
+        float lightDepthValue = Input.LightViewPosition.z / Input.LightViewPosition.w - ShadowBias;
 
         if (lightDepthValue < depthValue)
         {
             // Calculate the amount of light on this pixel.
-            LightIntensity = saturate(LightIntensity + 
-                dot(Input.Normal, LightDirection) * 
+            LightIntensity = saturate(LightIntensity +
+                dot(Input.Normal, LightDirection) *
                 pow(
                     cos(Input.LightViewPosition.x / Input.LightViewPosition.w * HalfPI) *
                     cos(Input.LightViewPosition.y / Input.LightViewPosition.w * HalfPI), 

@@ -200,9 +200,9 @@ namespace Generate.Content
                 17, 18, 19
 			}, Rand.Next());
 
-            Model.ScaleVector.X = 32 * Rand.NextFloat(0.5f, 1.0f);
+            Model.ScaleVector.X = 32 * Rand.NextFloat(0.5f, 0.95f);
             Model.ScaleVector.Y = 64 * Procedure.Constants.BuildingHeight * Rand.NextFloat(0.35f, 1.0f);
-            Model.ScaleVector.Z = 32 * Rand.NextFloat(0.5f, 1.0f);
+            Model.ScaleVector.Z = 32 * Rand.NextFloat(0.5f, 0.95f);
 
             return Model;
         }

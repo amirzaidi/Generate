@@ -194,7 +194,7 @@ namespace Generate.D3D
             {
                 Factor = Procedure.Constants.FogFactor,
                 BackgroundFactor = Procedure.Constants.FogBackgroundFactor,
-                ShadowBias = 0.0024f / (float)Math.Pow(AA, 2.5)
+                ShadowBias = 0.0006f / (float)Math.Pow(AA, 1.6)
             });
             Context.UnmapSubresource(PixelFogBuffer, 0);
         }

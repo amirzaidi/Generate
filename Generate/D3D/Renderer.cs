@@ -115,8 +115,8 @@ namespace Generate.D3D
             Utilities.Dispose(ref ShadowDepth);
             ShadowDepth = new Depth(Device, new ModeDescription
             {
-                Width = 1500 * AA,
-                Height = 1500 * AA
+                Width = 1650 * AA,
+                Height = 1650 * AA
             }, new SampleDescription(1, 0));
 
             Utilities.Dispose(ref CameraShader);

@@ -30,7 +30,6 @@ static const float HalfPI = 1.57079632679f;
 
 float Rand(float3 Seed)
 {
-    //return frac(sin(dot(float3(18.8315638359, 7.9272242975, 17.9122659205), Seed.xyz)) * 44843.158924414) * 2 - 1;
     return frac(sin(dot(Seed.xyz, float3(12.9898, 28.233, 45.5432))) * 42558.5453) * 2 - 1;
 }
 
@@ -39,10 +38,10 @@ float4 PS(Pixel Input) : SV_Target
     float4 TexColor = Texture.Sample(Sampler, Input.TexCoord);
 
     float Z = abs(LightDirection.x * sqrt(2) + LightDirection.y * sqrt(3) + LightDirection.z * sqrt(5)) + 1;
-
-    float R1 = Rand(float3(Input.Position.xy + float2(500, 500), Z));
-    float R2 = Rand(float3(Input.Position.xy + float2(550, 550), Z));
-    float R3 = Rand(float3(Input.Position.xy + float2(600, 600), Z));
+    
+    float R1 = Rand(float3(Input.Position.xy + float2(630, 625), Z));
+    float R2 = Rand(float3(Input.Position.xy + float2(655, 650), Z));
+    float R3 = Rand(float3(Input.Position.xy + float2(680, 675), Z));
 
     float3 Random = float3(R1, R2, R3) * Factor + LightColor.rgb * (1 - Factor);
     

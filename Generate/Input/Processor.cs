@@ -54,17 +54,17 @@ namespace Generate.Input
             if (KeyboardMouse.Pressed(Keys.F1) > 0)
             {
                 Program.Renderer.LoadWithAA(1);
-                Program.Overlay.SetBackBuffer(Program.Renderer.AntiAliasedBackBuffer);
+                Program.Overlay?.SetBackBuffer(Program.Renderer.AntiAliasedBackBuffer);
             }
             else if (KeyboardMouse.Pressed(Keys.F2) > 0)
             {
                 Program.Renderer.LoadWithAA(2);
-                Program.Overlay.SetBackBuffer(Program.Renderer.AntiAliasedBackBuffer);
+                Program.Overlay?.SetBackBuffer(Program.Renderer.AntiAliasedBackBuffer);
             }
             else if (KeyboardMouse.Pressed(Keys.F4) > 0)
             {
                 Program.Renderer.LoadWithAA(4);
-                Program.Overlay.SetBackBuffer(Program.Renderer.AntiAliasedBackBuffer);
+                Program.Overlay?.SetBackBuffer(Program.Renderer.AntiAliasedBackBuffer);
             }
 
             if (KeyboardMouse.Pressed(Keys.F8) > 0)

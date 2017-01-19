@@ -4,6 +4,7 @@ using Generate.D3D;
 using Generate.Input;
 using Generate.Procedure;
 using System;
+using System.Collections.Generic;
 
 namespace Generate
 {
@@ -24,7 +25,32 @@ namespace Generate
             Console.Title = "Generate CLI";
 
             Log("Seed? ");
-            Worker.Master = new Master(Console.ReadLine().ASCIIBytes());
+
+            var Seed = string.Empty;
+            while (true)
+            {
+                var Key = Console.ReadKey();
+                if (Key.Key == ConsoleKey.Enter)
+                {
+                    Console.WriteLine();
+                    break;
+                }
+                else if (Key.Key == ConsoleKey.Backspace)
+                {
+                    Console.Write(" ");
+                    if (Seed.Length != 0)
+                    {
+                        Seed = Seed.Substring(0, Seed.Length - 1);
+                        Console.Write("\b");
+                    }
+
+                    continue;
+                }
+
+                Seed += Key.KeyChar;
+            }
+
+            Worker.Master = new Master(Seed.ASCIIBytes());
 
             Constants.Load();
             

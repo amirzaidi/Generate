@@ -30,7 +30,7 @@ namespace Generate
             
             using (Window = new LoopWindow())
             using (Renderer = new Renderer(Window))
-            //using (Overlay = new Overlay(Renderer.Device, Renderer.AntiAliasedBackBuffer))
+            using (Overlay = new Overlay(Renderer.Device, Renderer.AntiAliasedBackBuffer))
             using (Chunks = new ChunkLoader())
             using (Sun.Main = new Sun(Constants.SunSeed))
             using (Skybox.Main = new Skybox(Constants.SkySeed))
